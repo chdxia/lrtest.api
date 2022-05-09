@@ -41,3 +41,14 @@ def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+def update_item(db: Session, item: schemas.ItemUpdate, item_id: int):
+    db_item= db.query(models.Item).filter(models.Item.id == item_id).first()
+    item_dict = item.dict()
+    db_item.title = item_dict['title']
+    db_item.description = item_dict['description']
+    db_item.owner_id = item_dict['owner_id']
+    db.commit()
+    db.refresh(db_item)
+    return db_item
