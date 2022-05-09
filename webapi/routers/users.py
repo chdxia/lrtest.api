@@ -26,9 +26,26 @@ async def read_user(user_id: int, db: Session=Depends(get_db)):
     return db_user
 
 
+@router.get("/{user_id}/items", response_model=list[schemas.Item])
+async def get_items_by_userid(user_id: int, db: Session=Depends(get_db)):
+    db_items= crud.get_items_by_userid(db, user_id=user_id)
+    if db_items is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return db_items
+
+
 @router.post("/", response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
     db_user= crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="email already existed")
     return crud.create_user(db=db, user=user)
+
+
+@router.post("/{user_id}/items", response_model= schemas.Item)
+async def create_item_for_user(
+    user_id: int,
+    item: schemas.ItemCreate,
+    db: Session=Depends(get_db)
+):
+    return crud.create_user_item(db=db, item=item, user_id=user_id)
