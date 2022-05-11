@@ -1,11 +1,9 @@
-from fastapi import Depends, FastAPI, HTTPException
-import uvicorn
-from sqlalchemy.orm import Session
+from fastapi import Depends, FastAPI
 from .dependencies import get_query_token, get_token_header
 from .internal import admin
 from .routers import items, users
-from .db import crud, models, schemas
-from .db.database import SessionLocal, engine
+from .db import models
+from .db.database import engine
 
 
 
