@@ -13,12 +13,14 @@ router = APIRouter(
 )
 
 
+# 获取商品信息
 @router.get("/", response_model=list[schemas.Item])
 async def read_items(skip: int=0, limit: int=100, db: Session=Depends(get_db)):
     items= crud.get_items(db, skip=skip, limit=limit)
     return items
 
 
+# 根据id查询商品信息
 @router.get("/{item_id}", response_model=schemas.Item)
 async def read_item(item_id: int, db: Session=Depends(get_db)):
     db_item= crud.get_item_by_id(db, item_id= item_id)
@@ -27,6 +29,7 @@ async def read_item(item_id: int, db: Session=Depends(get_db)):
     return db_item
 
 
+# 更新商品信息
 @router.put(
     "/{item_id}",
     response_model= schemas.Item,
