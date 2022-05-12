@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from ..db import crud, models, schemas
 from ..db.database import get_db
 from ..dependencies import get_token_header
+from ..common.log import logger
 
 
 router = APIRouter(
@@ -17,6 +18,7 @@ router = APIRouter(
 @router.get("/", response_model=list[schemas.User])
 async def read_users(skip: int=0, limit: int=100, db: Session=Depends(get_db)):
     users= crud.get_users(db, skip=skip, limit=limit)
+    logger.info("查询用户信息")
     return users
 
 
