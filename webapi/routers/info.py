@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Request
 from ..common.log import logger
+from ..common.get_info import get_request_info
 
 
 router = APIRouter(
-    prefix= "/getinfo",
+    prefix= "/info",
     tags= ["getinfo"],
     responses={404: {"description": "Not found"}}
 )
@@ -11,14 +12,7 @@ router = APIRouter(
 
 @router.post("/")
 async def get_info(*, request: Request):
-    res = {
-        "host": request.client.host,
-        "port": request.client.port,
-        "method": request.method,
-        "url": request.url,
-        "headers": request.headers,
-        "cookies": request.cookies,
-        "body": request.body
-    }
+    res = get_request_info(request)
+    res.update({"body": await request.json()})
     logger.info(str(res))
     return res
