@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from ..db import crud, models, schemas
 from ..db.database import get_db
 from ..dependencies import get_token_header
-from ..common.log import logger
+from ..utils.log_settings import logger
 
 
 router = APIRouter(

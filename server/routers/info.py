@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
-from ..common.log import logger
-from ..common.get_info import get_request_info
+from ..utils.log_settings import logger
+from ..utils.get_info import get_request_info
 
 
 router = APIRouter(

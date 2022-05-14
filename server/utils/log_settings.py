@@ -16,4 +16,4 @@ if not os.path.exists(log_path):
 log_path_all = os.path.join(log_path, f'{time.strftime("%Y-%m-%d")}_log.log')
 
 
-logger.add(log_path_all, rotation="12:00", retention="5 days", enqueue=True)
+logger.add(log_path_all, rotation="00:00", retention="5 days", enqueue=True)
