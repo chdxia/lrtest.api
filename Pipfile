@@ -9,6 +9,7 @@ uvicorn = "*"
 sqlalchemy = "*"
 pymysql = "*"
 loguru = "*"
+pyyaml = "*"
 [dev-packages]
 
 [requires]

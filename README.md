@@ -3,6 +3,6 @@
 ### run command:
 
 ```
-uvicorn webapi.main:app --port 8001 --reload
+uvicorn server.main:app --port 8001 --reload
 ```
 
