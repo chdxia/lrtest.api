@@ -1,9 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from ..utils.config import GetConfig
 
 
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:123456@localhost:3306/opentest"
+SQLALCHEMY_DATABASE_URL = GetConfig.get_database_url()
 
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
