@@ -10,6 +10,15 @@ router = APIRouter(
 )
 
 
+# 获取请求数据，记录日志
+@router.get("/")
+async def get_info(*, request: Request):
+    res = get_request_info(request)
+    logger.info(str(res))
+    return res
+
+
+# 获取请求数据，记录日志
 @router.post("/")
 async def get_info(*, request: Request):
     res = get_request_info(request)
