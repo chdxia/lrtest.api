@@ -18,7 +18,9 @@ except:
     logger.error("load config.yaml fail!!!")
 
 
+# 获取配置文件的类
 class GetConfig():
+    # 获取database_url
     def get_database_url():
         try:
             host = config_data["mysql"]["host"]
