@@ -1,3 +1,4 @@
+from sre_constants import GROUPREF_EXISTS
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..db import crud, models, schemas
@@ -14,29 +15,35 @@ router = APIRouter(
 )
 
 
-# 获取用户信息
+# 查询用户
 @router.get("/", response_model=list[schemas.User])
-async def read_users(skip: int=0, limit: int=100, db: Session=Depends(get_db)):
-    users= crud.get_users(db, skip=skip, limit=limit)
+async def get_users(email: str|None=None, skip: int=0, limit: int=10, db: Session=Depends(get_db)):
+    logger.info(type(email))
+    if email is None:
+        db_user = crud.get_users(db, skip=skip, limit=limit)
+    else:
+        db_user = crud.get_user_by_email(db, email=email, skip=skip, limit=limit)
     logger.info("查询用户信息")
-    return users
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="user not found")
+    return db_user
 
 
-# 根据id获取用户信息
+# 根据id查询用户
 @router.get("/{user_id}", response_model=schemas.User)
 async def read_user(user_id: int, db: Session=Depends(get_db)):
     db_user= crud.get_user_by_id(db, user_id=user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="user not found")
     return db_user
 
 
-# 根据用户id获取商品
+# 根据用户id查询物品
 @router.get("/{user_id}/items", response_model=list[schemas.Item])
 async def get_items_by_userid(user_id: int, db: Session=Depends(get_db)):
     db_items= crud.get_items_by_userid(db, user_id=user_id)
     if db_items is None:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=404, detail="item not found")
     return db_items
 
 
@@ -49,7 +56,16 @@ async def create_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 
-# 新增商品
+#修改用户
+@router.put('/{user_id}', response_model=schemas.User)
+async def update_user(user_id: int, user: schemas.UserUpdate, db:Session=Depends(get_db)):
+    db_user= crud.get_user_by_id(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="user not found")
+    return crud.update_user(db, user=user, user_id=user_id)
+
+
+# 新增物品
 @router.post("/{user_id}/items", response_model= schemas.Item)
 async def create_item_for_user(
     user_id: int,
@@ -58,5 +74,5 @@ async def create_item_for_user(
 ):
     db_user= crud.get_user_by_id(db, user_id=user_id)
     if db_user is None:
-        raise HTTPException(status_code=400, detail="user not exist!")
+        raise HTTPException(status_code=400, detail="user not found")
     return crud.create_user_item(db=db, item=item, user_id=user_id)

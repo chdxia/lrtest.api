@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
+from urllib import parse
 
 
 # 根据id查询用户信息
@@ -8,12 +9,12 @@ def get_user_by_id(db: Session, user_id: int):
 
 
 # 根据邮箱查询用户信息
-def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
+def get_user_by_email(db: Session, email: str, skip: int= 0, limit: int= 10):
+    return db.query(models.User).filter(models.User.email == email).offset(skip).limit(limit).all()
 
 
 # 获取用户信息
-def get_users(db: Session, skip: int= 0, limit: int= 100):
+def get_users(db: Session, skip: int= 0, limit: int= 10):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 
@@ -27,8 +28,20 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
+# 修改用户
+def update_user(db: Session, user:schemas.UserUpdate, user_id):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    user_dict = user.dict()
+    db_user.email = user_dict['email']
+    db_user.password = user_dict['password']
+    db_user.is_active = user_dict['is_active']
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
 # 获取商品信息
-def get_items(db: Session, skip: int =0, limit: int =100):
+def get_items(db: Session, skip: int =0, limit: int =10):
     return db.query(models.Item).offset(skip).limit(limit).all()
 
 
