@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -17,7 +18,9 @@ class ItemUpdate(ItemBase):
 class Item(ItemBase):
     id: int
     owner_id: int
-
+    createtime: datetime
+    updatetime: datetime
+    
     class Config:
         orm_mode = True
 
@@ -30,9 +33,15 @@ class UserCreate(UserBase):
     password: str
 
 
+class UserUpdate(UserBase):
+    pass
+
+
 class User(UserBase):
     id: int
     is_active: bool
+    createtime: datetime
+    updatetime: datetime
     items: list[Item] = []
 
     class Config:
