@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from datetime import datetime
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from .database import Base
 
@@ -10,6 +11,8 @@ class User(Base):
     email = Column(String(50), unique=True, index=True)
     password = Column(String(50))
     is_active = Column(Boolean, default=True)
+    createtime = Column(DateTime, default=datetime.now)
+    updatetime = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     items = relationship("Item", back_populates="owner")
 
 
@@ -20,4 +23,6 @@ class Item(Base):
     title = Column(String(50), index=True)
     description = Column(String(50), index=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
+    createtime = Column(DateTime, default=datetime.now)
+    updatetime = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     owner = relationship("User", back_populates="items")
