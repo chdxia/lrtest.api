@@ -1,2 +1,3 @@
-/logs
 config.yaml
+/logs
+*__pycache__
