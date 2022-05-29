@@ -51,8 +51,8 @@ def get_item_by_id(db: Session, item_id= int):
 
 
 # 根据用户id查询商品信息
-def get_items_by_userid(db: Session, user_id= int):
-    return db.query(models.Item).filter(models.Item.owner_id == user_id).all()
+def get_items_by_userid(db: Session, user_id= int, skip: int =0, limit: int =10):
+    return db.query(models.Item).filter(models.Item.owner_id == user_id).offset(skip).limit(limit).all()
 
 
 # 新增商品

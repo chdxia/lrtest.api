@@ -5,11 +5,12 @@ from ..db import crud, models, schemas
 from ..db.database import get_db
 from ..dependencies import get_token_header
 from ..utils.log_settings import logger
+from ..utils.common import Common
 
 
 router = APIRouter(
-    prefix="/users",
-    tags=["users"],
+    prefix="/user",
+    tags=["user"],
     # dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}}
 )
@@ -17,15 +18,13 @@ router = APIRouter(
 
 # 查询用户
 @router.get("/", response_model=list[schemas.User])
-async def get_users(email: str|None=None, skip: int=0, limit: int=10, db: Session=Depends(get_db)):
+async def get_users(email: str|None=None, page: int=1, limit: int=10, db: Session=Depends(get_db)):
     logger.info(type(email))
     if email is None:
-        db_user = crud.get_users(db, skip=skip, limit=limit)
+        db_user = crud.get_users(db, skip=Common.page_to_skip(page, limit), limit=limit)
     else:
-        db_user = crud.get_user_by_email(db, email=email, skip=skip, limit=limit)
+        db_user = crud.get_user_by_email(db, email=email, skip=Common.page_to_skip(page, limit), limit=limit)
     logger.info("查询用户信息")
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="user not found")
     return db_user
 
 
@@ -39,11 +38,9 @@ async def read_user(user_id: int, db: Session=Depends(get_db)):
 
 
 # 根据用户id查询物品
-@router.get("/{user_id}/items", response_model=list[schemas.Item])
-async def get_items_by_userid(user_id: int, db: Session=Depends(get_db)):
-    db_items= crud.get_items_by_userid(db, user_id=user_id)
-    if db_items is None:
-        raise HTTPException(status_code=404, detail="item not found")
+@router.get("/{user_id}/item", response_model=list[schemas.Item])
+async def get_items_by_userid(user_id: int, page: int=1, limit: int=10, db: Session=Depends(get_db)):
+    db_items= crud.get_items_by_userid(db, user_id=user_id, skip=Common.page_to_skip(page, limit), limit=limit)
     return db_items
 
 
@@ -66,7 +63,7 @@ async def update_user(user_id: int, user: schemas.UserUpdate, db:Session=Depends
 
 
 # 新增物品
-@router.post("/{user_id}/items", response_model= schemas.Item)
+@router.post("/{user_id}/item", response_model= schemas.Item)
 async def create_item_for_user(
     user_id: int,
     item: schemas.ItemCreate,

@@ -3,11 +3,12 @@ from sqlalchemy.orm import Session
 from ..db import crud, models, schemas
 from ..db.database import get_db
 from ..dependencies import get_token_header
+from ..utils.common import Common
 
 
 router = APIRouter(
-    prefix="/items",
-    tags=["items"],
+    prefix="/item",
+    tags=["item"],
     # dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}}
 )
@@ -15,8 +16,8 @@ router = APIRouter(
 
 # 查询物品
 @router.get("/", response_model=list[schemas.Item])
-async def read_items(skip: int=0, limit: int=10, db: Session=Depends(get_db)):
-    items= crud.get_items(db, skip=skip, limit=limit)
+async def read_items(page: int=1, limit: int=10, db: Session=Depends(get_db)):
+    items= crud.get_items(db, skip=Common.page_to_skip(page, limit), limit=limit)
     return items
 
 
@@ -39,7 +40,7 @@ async def update_item(item_id: int, item: schemas.ItemUpdate, db: Session=Depend
     db_item= crud.get_item_by_id(db, item_id= item_id)
     db_user= crud.get_user_by_id(db, user_id=item.owner_id)
     if db_item is None:
-        raise HTTPException(status_code=404, detail="item not exist!")
+        raise HTTPException(status_code=404, detail="item not found")
     elif db_user is None:
-        raise HTTPException(status_code=404, detail="user not exist!")
+        raise HTTPException(status_code=404, detail="user not found")
     return crud.update_item(db, item=item, item_id=item_id)

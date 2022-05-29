@@ -34,7 +34,8 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(UserBase):
-    pass
+    password: str
+    is_active: bool
 
 
 class User(UserBase):
