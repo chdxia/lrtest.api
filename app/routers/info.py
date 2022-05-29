@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from ..utils.log_settings import logger
-from ..utils.get_info import get_request_info
+from ..utils.common import Common
 
 
 router = APIRouter(
@@ -13,7 +13,7 @@ router = APIRouter(
 # 获取请求数据，记录日志
 @router.get("/")
 async def get_info(*, request: Request):
-    res = get_request_info(request)
+    res = Common.get_request_info(request)
     logger.info(str(res))
     return res
 
@@ -21,7 +21,7 @@ async def get_info(*, request: Request):
 # 获取请求数据，记录日志
 @router.post("/")
 async def get_info(*, request: Request):
-    res = get_request_info(request)
+    res = Common.get_request_info(request)
     res.update({"body": await request.json()})
     logger.info(str(res))
     return res
