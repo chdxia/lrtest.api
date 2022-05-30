@@ -8,8 +8,8 @@ from .database import Base
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(50), unique=True, index=True)
-    password = Column(String(50))
+    email = Column(String(64), unique=True, index=True)
+    password = Column(String(64))
     is_active = Column(Boolean, default=True)
     createtime = Column(DateTime, default=datetime.now)
     updatetime = Column(DateTime, default=datetime.now, onupdate=datetime.now)
@@ -20,8 +20,8 @@ class User(Base):
 class Item(Base):
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(50), index=True)
-    description = Column(String(50), index=True)
+    title = Column(String(64), index=True)
+    description = Column(String(64), index=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
     createtime = Column(DateTime, default=datetime.now)
     updatetime = Column(DateTime, default=datetime.now, onupdate=datetime.now)

@@ -1,3 +1,6 @@
+from passlib.hash import sha256_crypt
+
+
 class Common():
     # 获取并返回请求数据
     def get_request_info(request):
@@ -16,3 +19,7 @@ class Common():
             return limit*(page-1)
         else:
             return 0
+
+    # 加密
+    def str_to_sha256(password):
+        return sha256_crypt.encrypt(password, rounds=5000)

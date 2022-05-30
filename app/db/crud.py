@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
 from urllib import parse
+from ..utils.common import Common
 
 
 # 根据id查询用户信息
@@ -20,8 +21,7 @@ def get_users(db: Session, skip: int= 0, limit: int= 10):
 
 # 新增用户
 def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = models.User(email= user.email, password= fake_hashed_password)
+    db_user = models.User(email= user.email, password= Common.str_to_sha256(user.password))
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
