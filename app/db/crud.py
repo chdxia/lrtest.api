@@ -17,9 +17,11 @@ def get_user_by_email(db: Session, email: str):
 
 
 # 查询用户
-def get_users(db: Session, email: str|None=None, skip: int= 0, limit: int= 10):
+def get_users(db: Session, email: str|None=None, access_token: str|None=None, is_active: bool|None=None, skip: int= 0, limit: int= 10):
     return db.query(models.User).filter(
-        or_(models.User.email.like('%{email}%'.format(email=email)), email == None)
+        or_(models.User.email.like('%{email}%'.format(email=email)), email == None),
+        or_(models.User.access_token == access_token, access_token == None),
+        or_(models.User.is_active == is_active, is_active == None)
     ).offset(skip).limit(limit).all()
 
 

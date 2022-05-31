@@ -18,8 +18,8 @@ router = APIRouter(
 
 # 查询用户
 @router.get("/", response_model=list[schemas.User])
-async def get_users(email: str|None=None, page: int=1, limit: int=10, db: Session=Depends(get_db)):
-    db_user = crud.get_users(db, email=email, skip=Common.page_to_skip(page, limit), limit=limit)
+async def get_users(email: str|None=None, is_active: bool|None=None, page: int=1, limit: int=10, db: Session=Depends(get_db)):
+    db_user = crud.get_users(db, email=email, is_active=is_active, skip=Common.page_to_skip(page, limit), limit=limit)
     logger.info("查询用户信息")
     return db_user
 
