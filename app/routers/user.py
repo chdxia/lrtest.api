@@ -23,7 +23,7 @@ async def get_users(email: str|None=None, page: int=1, limit: int=10, db: Sessio
     if email is None:
         db_user = crud.get_users(db, skip=Common.page_to_skip(page, limit), limit=limit)
     else:
-        db_user = crud.get_user_by_email(db, email=email, skip=Common.page_to_skip(page, limit), limit=limit)
+        db_user = crud.get_users_by_email(db, email=email, skip=Common.page_to_skip(page, limit), limit=limit)
     logger.info("查询用户信息")
     return db_user
 

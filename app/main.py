@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI
 from .dependencies import get_query_token, get_token_header
-from .internal import admin
+from .internal import admin, login
 from .routers import item, user, info
 from .db import models
 from .db.database import engine
@@ -20,6 +20,7 @@ app = FastAPI(
 app.include_router(user.router)
 app.include_router(item.router)
 app.include_router(info.router)
+app.include_router(login.router)
 app.include_router(
     admin.router,
     # prefix="/admin",

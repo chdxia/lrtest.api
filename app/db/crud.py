@@ -1,20 +1,25 @@
 from sqlalchemy.orm import Session
+import uuid
 from . import models, schemas
-from urllib import parse
 from ..utils.common import Common
 
 
-# 根据id查询用户信息
+# 根据id查询用户
 def get_user_by_id(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
 # 根据邮箱查询用户信息
-def get_user_by_email(db: Session, email: str, skip: int= 0, limit: int= 10):
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()
+
+
+# 根据邮箱查询用户
+def get_users_by_email(db: Session, email: str, skip: int= 0, limit: int= 10):
     return db.query(models.User).filter(models.User.email == email).offset(skip).limit(limit).all()
 
 
-# 获取用户信息
+# 查询用户
 def get_users(db: Session, skip: int= 0, limit: int= 10):
     return db.query(models.User).offset(skip).limit(limit).all()
 
@@ -33,11 +38,20 @@ def update_user(db: Session, user:schemas.UserUpdate, user_id):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     user_dict = user.dict()
     db_user.email = user_dict['email']
-    db_user.password = user_dict['password']
+    db_user.password = Common.str_to_sha256(user_dict['password'])
     db_user.is_active = user_dict['is_active']
     db.commit()
     db.refresh(db_user)
     return db_user
+
+# 更新token
+def update_token(db: Session, user_id):
+    db_user = db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    token = uuid.uuid4()
+    db_user.access_token = token
+    db.commit()
+    db.refresh(db_user)
+    return token
 
 
 # 获取商品信息
