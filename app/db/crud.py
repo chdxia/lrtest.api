@@ -1,4 +1,3 @@
-from operator import or_
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 import uuid

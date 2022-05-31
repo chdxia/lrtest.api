@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..db import crud, models, schemas
 from ..db.database import get_db
-from ..dependencies import get_token_header
 from ..utils.common import Common
 
 
