@@ -9,8 +9,8 @@ from ..utils.common import Common
 
 
 router = APIRouter(
-    prefix="/user",
-    tags=["user"],
+    prefix="/users",
+    tags=["users"],
     # dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}}
 )
@@ -19,11 +19,7 @@ router = APIRouter(
 # 查询用户
 @router.get("/", response_model=list[schemas.User])
 async def get_users(email: str|None=None, page: int=1, limit: int=10, db: Session=Depends(get_db)):
-    logger.info(type(email))
-    if email is None:
-        db_user = crud.get_users(db, skip=Common.page_to_skip(page, limit), limit=limit)
-    else:
-        db_user = crud.get_users_by_email(db, email=email, skip=Common.page_to_skip(page, limit), limit=limit)
+    db_user = crud.get_users(db, email=email, skip=Common.page_to_skip(page, limit), limit=limit)
     logger.info("查询用户信息")
     return db_user
 
@@ -38,15 +34,16 @@ async def read_user(user_id: int, db: Session=Depends(get_db)):
 
 
 # 根据用户id查询物品
-@router.get("/{user_id}/item", response_model=list[schemas.Item])
-async def get_items_by_userid(user_id: int, page: int=1, limit: int=10, db: Session=Depends(get_db)):
-    db_items= crud.get_items_by_userid(db, user_id=user_id, skip=Common.page_to_skip(page, limit), limit=limit)
+@router.get("/{user_id}/items", response_model=list[schemas.Item])
+async def get_items_by_userid(user_id: int, title: str|None=None, description: str|None=None, page: int=1, limit: int=10, db: Session=Depends(get_db)):
+    db_items= crud.get_items(db, user_id=user_id, title=title, description=description, skip=Common.page_to_skip(page, limit), limit=limit)
     return db_items
 
 
 # 新增用户
 @router.post("/", response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
+    # 验证邮箱是否已存在
     db_user= crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="email already existed!")
@@ -63,7 +60,7 @@ async def update_user(user_id: int, user: schemas.UserUpdate, db:Session=Depends
 
 
 # 新增物品
-@router.post("/{user_id}/item", response_model= schemas.Item)
+@router.post("/{user_id}/items", response_model= schemas.Item)
 async def create_item_for_user(
     user_id: int,
     item: schemas.ItemCreate,

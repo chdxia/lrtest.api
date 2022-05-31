@@ -1,4 +1,6 @@
+from operator import or_
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 import uuid
 from . import models, schemas
 from ..utils.common import Common
@@ -9,19 +11,16 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-# 根据邮箱查询用户信息
+# 根据邮箱查询用户（验证邮箱是否已存在）
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-# 根据邮箱查询用户
-def get_users_by_email(db: Session, email: str, skip: int= 0, limit: int= 10):
-    return db.query(models.User).filter(models.User.email == email).offset(skip).limit(limit).all()
-
-
 # 查询用户
-def get_users(db: Session, skip: int= 0, limit: int= 10):
-    return db.query(models.User).offset(skip).limit(limit).all()
+def get_users(db: Session, email: str|None=None, skip: int= 0, limit: int= 10):
+    return db.query(models.User).filter(
+        or_(models.User.email.like('%{email}%'.format(email=email)), email == None)
+    ).offset(skip).limit(limit).all()
 
 
 # 新增用户
@@ -54,19 +53,18 @@ def update_token(db: Session, user_id):
     return token
 
 
-# 获取商品信息
-def get_items(db: Session, skip: int =0, limit: int =10):
-    return db.query(models.Item).offset(skip).limit(limit).all()
+# 查询物品
+def get_items(db: Session, user_id: int|None=None, title: str|None=None, description: str|None=None, skip: int =0, limit: int =10):
+    return db.query(models.Item).filter(
+        or_(models.Item.owner_id == user_id, user_id == None),
+        or_(models.Item.title.like('%{title}%'.format(title=title)), title == None),
+        or_(models.Item.description.like('%{description}%'.format(description=description)), description == None)
+    ).offset(skip).limit(limit).all()
 
 
-# 根据id查询商品信息
+# 根据id查询物品
 def get_item_by_id(db: Session, item_id= int):
     return db.query(models.Item).filter(models.Item.id == item_id).first()
-
-
-# 根据用户id查询商品信息
-def get_items_by_userid(db: Session, user_id= int, skip: int =0, limit: int =10):
-    return db.query(models.Item).filter(models.Item.owner_id == user_id).offset(skip).limit(limit).all()
 
 
 # 新增商品
