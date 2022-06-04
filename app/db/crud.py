@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 import uuid
 from . import models, schemas
 from ..utils.common import Common
@@ -16,17 +16,31 @@ def get_user_by_email(db: Session, email: str):
 
 
 # 查询用户
-def get_users(db: Session, email: str|None=None, access_token: str|None=None, is_active: bool|None=None, skip: int= 0, limit: int= 10):
+def get_users(
+    db: Session,
+    name: str|None=None,
+    email: str|None=None,
+    access_token: str|None=None,
+    role: int|None=None,
+    status: bool|None=None,
+    skip: int= 0,
+    limit: int= 10,
+    sort: str|None = None
+):
     return db.query(models.User).filter(
-        or_(models.User.email.like('%{email}%'.format(email=email)), email == None),
+        or_(models.User.name.like('%{n}%'.format(n=name)), email == None),
+        or_(models.User.email.like('%{e}%'.format(e=email)), email == None),
         or_(models.User.access_token == access_token, access_token == None),
-        or_(models.User.is_active == is_active, is_active == None)
+        or_(models.User.role == role, role == None),
+        or_(models.User.status == status, status == None)
+    ).order_by(
+        and_(models.User.id.desc(), sort == '-id')
     ).offset(skip).limit(limit).all()
 
 
 # 新增用户
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(email= user.email, password= Common.str_to_sha256(user.password))
+    db_user = models.User(name= user.name, email= user.email, password= Common.str_to_sha256(user.password), role=user.role, status=user.status)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -39,7 +53,7 @@ def update_user(db: Session, user:schemas.UserUpdate, user_id):
     user_dict = user.dict()
     db_user.email = user_dict['email']
     db_user.password = Common.str_to_sha256(user_dict['password'])
-    db_user.is_active = user_dict['is_active']
+    db_user.status = user_dict['status']
     db.commit()
     db.refresh(db_user)
     return db_user

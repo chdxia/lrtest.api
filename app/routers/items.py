@@ -14,7 +14,7 @@ router = APIRouter(
 
 
 # 查询物品
-@router.get("/", response_model=list[schemas.Item])
+@router.get("", response_model=schemas.Items)
 async def read_items(title: str|None=None, description: str|None=None, page: int=1, limit: int=10, db: Session=Depends(get_db)):
     items= crud.get_items(db, title=title, description=description, skip=Common.page_to_skip(page, limit), limit=limit)
     return items

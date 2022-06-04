@@ -2,48 +2,58 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+# 物品
 class ItemBase(BaseModel):
-    title: str
-    description: str | None = None
-
+    title: str|None=None
+    description: str|None=None
 
 class ItemCreate(ItemBase):
     pass
 
-
 class ItemUpdate(ItemBase):
-    owner_id: int
+    pass
 
-
-class Item(ItemBase):
+class Item(BaseModel):
     id: int
+    title: str
+    description: str
     owner_id: int
-    createtime: datetime
-    updatetime: datetime
+    create_time: datetime
+    update_time: datetime
     
     class Config:
-        orm_mode = True
+            orm_mode = True
+
+class Items(BaseModel):
+    code: int
+    data: list[Item]
 
 
-class UserBase(BaseModel):
+# 用户
+class UserLogin(BaseModel):
     email: str
-
-
-class UserCreate(UserBase):
     password: str
 
+class UserCreate(UserLogin):
+    name: str
+    role: int
+    status: bool
 
-class UserUpdate(UserBase):
-    password: str
-    is_active: bool
+class UserUpdate(UserCreate):
+    pass
 
-
-class User(UserBase):
+class User(BaseModel):
     id: int
-    is_active: bool
-    createtime: datetime
-    updatetime: datetime
-    items: list[Item] = []
+    name: str
+    email: str
+    role: int
+    status: bool
+    create_time: datetime
+    update_time: datetime
 
     class Config:
-        orm_mode = True
+            orm_mode = True
+
+class Users(BaseModel):
+    code: int
+    data: list[User]

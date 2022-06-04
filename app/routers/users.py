@@ -9,17 +9,50 @@ from ..utils.common import Common
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    # dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}}
 )
 
 
 # 查询用户
-@router.get("/", response_model=list[schemas.User])
-async def get_users(email: str|None=None, is_active: bool|None=None, page: int=1, limit: int=10, db: Session=Depends(get_db)):
-    db_user = crud.get_users(db, email=email, is_active=is_active, skip=Common.page_to_skip(page, limit), limit=limit)
-    logger.info("查询用户信息")
-    return db_user
+@router.get("", response_model=schemas.Users, summary='查询用户')
+async def get_users(
+    name: str|None=None,
+    email: str|None=None,
+    role: int|None=None,
+    status: bool|None=None,
+    page: int=1,
+    limit: int=10,
+    sort: str|None=None,
+    db: Session=Depends(get_db)
+):
+    db_user = crud.get_users(
+        db,
+        name=name,
+        email=email,
+        role=role,
+        status=status,
+        skip=Common.page_to_skip(page, limit),
+        limit=limit,
+        sort=sort
+    )
+    logger.info("查询用户")
+    return {"code": 20000, "data": db_user}
+
+
+# 获取当前用户信息
+@router.get("/info")
+async def get_info():
+    return {
+        "code":20000,
+        "data":{
+            "roles":[
+                "admin"
+            ],
+            "introduction":"I am a super administrator",
+            "avatar":"https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
+            "name":"Super Admin"
+        }
+    }
 
 
 # 根据id查询用户
@@ -39,7 +72,7 @@ async def get_items_by_userid(user_id: int, title: str|None=None, description: s
 
 
 # 新增用户
-@router.post("/", response_model=schemas.User)
+@router.post("", response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
     # 验证邮箱是否已存在
     db_user= crud.get_user_by_email(db, email=user.email)

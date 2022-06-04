@@ -1,7 +1,7 @@
 from sys import prefix
 from fastapi import Depends, FastAPI
 from .dependencies import get_token_header
-from .internal import login
+from .internal import login, logout
 from .routers import items, users, info
 from .db import models
 from .db.database import engine
@@ -21,9 +21,10 @@ app = FastAPI(
 )
 
 app.include_router(login.router, prefix=api_route_depends)
-app.include_router(users.router, prefix=api_route_depends, dependencies=[Depends(get_token_header)])
+app.include_router(users.router, prefix=api_route_depends)
 app.include_router(items.router, prefix=api_route_depends, dependencies=[Depends(get_token_header)])
 app.include_router(info.router, prefix=api_route_depends, dependencies=[Depends(get_token_header)])
+app.include_router(logout.router, prefix=api_route_depends, dependencies=[Depends(get_token_header)])
 
 
 @app.get(api_route_depends)
