@@ -11,7 +11,7 @@ class User(Base):
     name = Column(String(64))
     email = Column(String(64), unique=True, index=True)
     password = Column(String(64))
-    access_token = Column(String(64), default=None)
+    access_token = Column(String(64), default=None, index=True)
     role = Column(Integer, nullable=False)
     status = Column(Boolean, default=True)
     create_time = Column(DateTime, default=datetime.now)

@@ -1,4 +1,3 @@
-from sys import prefix
 from fastapi import Depends, FastAPI
 from .dependencies import get_token_header
 from .internal import login, logout
@@ -24,7 +23,7 @@ app.include_router(login.router, prefix=api_route_depends)
 app.include_router(users.router, prefix=api_route_depends)
 app.include_router(items.router, prefix=api_route_depends, dependencies=[Depends(get_token_header)])
 app.include_router(info.router, prefix=api_route_depends, dependencies=[Depends(get_token_header)])
-app.include_router(logout.router, prefix=api_route_depends, dependencies=[Depends(get_token_header)])
+app.include_router(logout.router, prefix=api_route_depends)
 
 
 @app.get(api_route_depends)

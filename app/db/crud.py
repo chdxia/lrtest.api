@@ -58,14 +58,24 @@ def update_user(db: Session, user:schemas.UserUpdate, user_id):
     db.refresh(db_user)
     return db_user
 
+
 # 更新token
-def update_token(db: Session, user_id):
-    db_user = db_user = db.query(models.User).filter(models.User.id == user_id).first()
-    token = uuid.uuid4()
-    db_user.access_token = token
-    db.commit()
-    db.refresh(db_user)
-    return token
+def update_token(db: Session, user_id: int|None=None, access_token: str|None=None):
+    # 传入user_id时，更新该用户的token
+    if user_id:
+        db_user = db.query(models.User).filter(models.User.id == user_id).first()
+        token = uuid.uuid4()
+        db_user.access_token = token
+        db.commit()
+        db.refresh(db_user)
+        return token
+    # 没有传入user_id，且传入token时，删除该token值（此处暂未考虑token重复）
+    elif access_token:
+        db_user = db.query(models.User).filter(models.User.access_token == access_token).first()
+        if db_user:
+            db_user.access_token = None
+            db.commit()
+            db.refresh(db_user)
 
 
 # 查询物品
