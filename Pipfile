@@ -10,6 +10,7 @@ sqlalchemy = "*"
 pymysql = "*"
 loguru = "*"
 pyyaml = "*"
+passlib = "*"
 [dev-packages]
 
 [requires]

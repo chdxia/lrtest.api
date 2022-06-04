@@ -1,11 +1,10 @@
-from fastapi import Header, HTTPException
+from fastapi import Header, Depends, HTTPException
+from sqlalchemy.orm import Session
+from .db import crud
+from .db.database import get_db
 
 
-async def get_token_header(x_token: str = Header(...)):
-    if x_token != "fake-super-secret-token":
+async def get_token_header(X_Token: str = Header(...), db: Session=Depends(get_db)):
+    db_user = crud.get_users(db, access_token=X_Token)
+    if len(db_user) == 0:
         raise HTTPException(status_code=400, detail="X-Token header invalid")
-
-
-async def get_query_token(token: str | None = None):
-    if token == "jessica":
-        raise HTTPException(status_code=400, detail="No Jessica token provided")

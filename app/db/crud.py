@@ -1,27 +1,46 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_, and_
+import uuid
 from . import models, schemas
-from urllib import parse
+from ..utils.common import Common
 
 
-# 根据id查询用户信息
+# 根据id查询用户
 def get_user_by_id(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-# 根据邮箱查询用户信息
-def get_user_by_email(db: Session, email: str, skip: int= 0, limit: int= 10):
-    return db.query(models.User).filter(models.User.email == email).offset(skip).limit(limit).all()
+# 根据邮箱查询用户（验证邮箱是否已存在）
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()
 
 
-# 获取用户信息
-def get_users(db: Session, skip: int= 0, limit: int= 10):
-    return db.query(models.User).offset(skip).limit(limit).all()
+# 查询用户
+def get_users(
+    db: Session,
+    name: str|None=None,
+    email: str|None=None,
+    access_token: str|None=None,
+    role: int|None=None,
+    status: bool|None=None,
+    skip: int= 0,
+    limit: int= 10,
+    sort: str|None = None
+):
+    return db.query(models.User).filter(
+        or_(models.User.name.like('%{n}%'.format(n=name)), email == None),
+        or_(models.User.email.like('%{e}%'.format(e=email)), email == None),
+        or_(models.User.access_token == access_token, access_token == None),
+        or_(models.User.role == role, role == None),
+        or_(models.User.status == status, status == None)
+    ).order_by(
+        and_(models.User.id.desc(), sort == '-id')
+    ).offset(skip).limit(limit).all()
 
 
 # 新增用户
 def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = models.User(email= user.email, password= fake_hashed_password)
+    db_user = models.User(name= user.name, email= user.email, password= Common.str_to_sha256(user.password), role=user.role, status=user.status)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -33,26 +52,34 @@ def update_user(db: Session, user:schemas.UserUpdate, user_id):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     user_dict = user.dict()
     db_user.email = user_dict['email']
-    db_user.password = user_dict['password']
-    db_user.is_active = user_dict['is_active']
+    db_user.password = Common.str_to_sha256(user_dict['password'])
+    db_user.status = user_dict['status']
     db.commit()
     db.refresh(db_user)
     return db_user
 
+# 更新token
+def update_token(db: Session, user_id):
+    db_user = db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    token = uuid.uuid4()
+    db_user.access_token = token
+    db.commit()
+    db.refresh(db_user)
+    return token
 
-# 获取商品信息
-def get_items(db: Session, skip: int =0, limit: int =10):
-    return db.query(models.Item).offset(skip).limit(limit).all()
+
+# 查询物品
+def get_items(db: Session, user_id: int|None=None, title: str|None=None, description: str|None=None, skip: int =0, limit: int =10):
+    return db.query(models.Item).filter(
+        or_(models.Item.owner_id == user_id, user_id == None),
+        or_(models.Item.title.like('%{title}%'.format(title=title)), title == None),
+        or_(models.Item.description.like('%{description}%'.format(description=description)), description == None)
+    ).offset(skip).limit(limit).all()
 
 
-# 根据id查询商品信息
+# 根据id查询物品
 def get_item_by_id(db: Session, item_id= int):
     return db.query(models.Item).filter(models.Item.id == item_id).first()
-
-
-# 根据用户id查询商品信息
-def get_items_by_userid(db: Session, user_id= int):
-    return db.query(models.Item).filter(models.Item.owner_id == user_id).all()
 
 
 # 新增商品

@@ -8,11 +8,14 @@ from .database import Base
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(50), unique=True, index=True)
-    password = Column(String(50))
-    is_active = Column(Boolean, default=True)
-    createtime = Column(DateTime, default=datetime.now)
-    updatetime = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    name = Column(String(64))
+    email = Column(String(64), unique=True, index=True)
+    password = Column(String(64))
+    access_token = Column(String(64), default=None)
+    role = Column(Integer, nullable=False)
+    status = Column(Boolean, default=True)
+    create_time = Column(DateTime, default=datetime.now)
+    update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     items = relationship("Item", back_populates="owner")
 
 
@@ -20,9 +23,9 @@ class User(Base):
 class Item(Base):
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(50), index=True)
-    description = Column(String(50), index=True)
+    title = Column(String(64), index=True)
+    description = Column(String(64), index=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
-    createtime = Column(DateTime, default=datetime.now)
-    updatetime = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    create_time = Column(DateTime, default=datetime.now)
+    update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     owner = relationship("User", back_populates="items")
