@@ -14,11 +14,11 @@ class Common():
         }
 
     # api的分页功能
-    def page_to_skip(page: int, limit: int):
+    """ def page_to_skip(page: int, limit: int):
         if page >= 1:
             return limit*(page-1)
         else:
-            return 0
+            return 0 """
 
     # 加密
     def str_to_sha256(password):

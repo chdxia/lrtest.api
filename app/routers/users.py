@@ -27,18 +27,10 @@ async def get_users(
     sort: str|None=None,
     db: Session=Depends(get_db)
 ):
-    db_user = crud.get_users(
-        db,
-        name=name,
-        email=email,
-        role=role,
-        status=status,
-        skip=Common.page_to_skip(page, limit),
-        limit=limit,
-        sort=sort
-    )
+    db_user = crud.get_users(db, name=name, email=email, role=role, status=status, sort=sort)
+    paginated_user = list(db_user)[(page-1)*limit:(page-1)*limit+limit]
     logger.info("查询用户")
-    return {"code": 20000, "data": db_user}
+    return {"code": 20000, "data": dict({"total":len(list(db_user)), "users":paginated_user})}
 
 
 # 获取当前用户信息

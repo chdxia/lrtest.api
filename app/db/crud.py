@@ -23,8 +23,6 @@ def get_users(
     access_token: str|None=None,
     role: int|None=None,
     status: bool|None=None,
-    skip: int= 0,
-    limit: int= 10,
     sort: str|None = None
 ):
     return db.query(models.User).filter(
@@ -35,7 +33,7 @@ def get_users(
         or_(models.User.status == status, status == None)
     ).order_by(
         and_(models.User.id.desc(), sort == '-id')
-    ).offset(skip).limit(limit).all()
+    ).all()
 
 
 # 新增用户
