@@ -1,9 +1,11 @@
+from sre_constants import SUCCESS
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..db import crud, schemas
 from ..db.database import get_db
 from ..utils.log_settings import logger
 from ..utils.common import Common
+from typing import Union
 
 
 router = APIRouter(
@@ -14,11 +16,11 @@ router = APIRouter(
 
 
 # 查询用户
-@router.get("", response_model=schemas.Users, summary='查询用户')
+@router.get("", response_model=schemas.responseUsers, summary='查询用户')
 async def get_users(
     name: str|None=None,
     email: str|None=None,
-    role: int|None=None,
+    role: int|None = None,
     status: bool|None=None,
     page: int=1,
     limit: int=10,
@@ -45,9 +47,7 @@ async def get_info():
     return {
         "code":20000,
         "data":{
-            "roles":[
-                "admin"
-            ],
+            "roles":["admin"],
             "introduction":"I am a super administrator",
             "avatar":"https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
             "name":"Super Admin"
@@ -72,22 +72,32 @@ async def get_items_by_userid(user_id: int, title: str|None=None, description: s
 
 
 # 新增用户
-@router.post("", response_model=schemas.User)
+@router.post("", response_model=schemas.responseUser)
 async def create_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
     # 验证邮箱是否已存在
     db_user= crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="email already existed!")
-    return crud.create_user(db=db, user=user)
+    return {"code": 20000, "data": crud.create_user(db=db, user=user)}
 
 
 #修改用户
-@router.put('/{user_id}', response_model=schemas.User)
+@router.put('/{user_id}', response_model=schemas.responseUser)
 async def update_user(user_id: int, user: schemas.UserUpdate, db:Session=Depends(get_db)):
     db_user= crud.get_user_by_id(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="user not found")
-    return crud.update_user(db, user=user, user_id=user_id)
+    return {"code": 20000, "data": crud.update_user(db, user=user, user_id=user_id)}
+
+
+# 删除用户
+@router.delete('/{user_id}', response_model=schemas.responseUser)
+async def delete_user(user_id: int, db:Session=Depends(get_db)):
+    db_user = crud.get_user_by_id(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="user not found")
+    crud.delete_user(db, user_id=user_id)
+    return {"code": 20000, "data": db_user}
 
 
 # 新增物品

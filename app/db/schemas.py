@@ -35,12 +35,12 @@ class UserLogin(BaseModel):
     password: str
 
 class UserCreate(UserLogin):
-    name: str
+    name: str|None=None
     role: int
     status: bool
 
 class UserUpdate(UserCreate):
-    pass
+    password: str|None=None
 
 class User(BaseModel):
     id: int
@@ -54,6 +54,10 @@ class User(BaseModel):
     class Config:
             orm_mode = True
 
-class Users(BaseModel):
+class responseUser(BaseModel):
+    code: int
+    data: User
+
+class responseUsers(BaseModel):
     code: int
     data: list[User]

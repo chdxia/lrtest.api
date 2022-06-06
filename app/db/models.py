@@ -23,8 +23,8 @@ class User(Base):
 class Item(Base):
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(64), index=True)
-    description = Column(String(64), index=True)
+    title = Column(String(64))
+    description = Column(String(64))
     owner_id = Column(Integer, ForeignKey("users.id"))
     create_time = Column(DateTime, default=datetime.now)
     update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)

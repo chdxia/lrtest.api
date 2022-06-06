@@ -52,11 +52,19 @@ def update_user(db: Session, user:schemas.UserUpdate, user_id):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     user_dict = user.dict()
     db_user.email = user_dict['email']
-    db_user.password = Common.str_to_sha256(user_dict['password'])
+    if user_dict['password'] :
+        db_user.password = Common.str_to_sha256(user_dict['password'])
     db_user.status = user_dict['status']
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+# 删除用户
+def delete_user(db: Session, user_id):
+    db_user = db.query(models.User).filter(models.User.id == user_id).delete()
+    db.commit()
+    db.refresh(db_user)
 
 
 # 更新token
