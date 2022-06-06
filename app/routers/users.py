@@ -5,7 +5,6 @@ from ..db import crud, schemas
 from ..db.database import get_db
 from ..utils.log_settings import logger
 from ..utils.common import Common
-from typing import Union
 
 
 router = APIRouter(
@@ -20,11 +19,11 @@ router = APIRouter(
 async def get_users(
     name: str|None=None,
     email: str|None=None,
-    role: int|None = None,
+    role: int|None=None,
     status: bool|None=None,
     page: int=1,
     limit: int=10,
-    sort: str|None=None,
+    sort: str|None='+create_time',
     db: Session=Depends(get_db)
 ):
     db_user = crud.get_users(db, name=name, email=email, role=role, status=status, sort=sort)
@@ -73,7 +72,7 @@ async def create_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
     return {"code": 20000, "data": crud.create_user(db=db, user=user)}
 
 
-#修改用户
+# 修改用户
 @router.put('/{user_id}', response_model=schemas.responseUser)
 async def update_user(user_id: int, user: schemas.UserUpdate, db:Session=Depends(get_db)):
     db_user= crud.get_user_by_id(db, user_id=user_id)
