@@ -23,24 +23,31 @@ def get_users(
     access_token: str|None=None,
     role: int|None=None,
     status: bool|None=None,
-    skip: int= 0,
-    limit: int= 10,
-    sort: str|None = None
+    sort: str|None = '+create_time'
 ):
     return db.query(models.User).filter(
-        or_(models.User.name.like('%{n}%'.format(n=name)), email == None),
+        or_(models.User.name.like('%{n}%'.format(n=name)), name == None),
         or_(models.User.email.like('%{e}%'.format(e=email)), email == None),
         or_(models.User.access_token == access_token, access_token == None),
         or_(models.User.role == role, role == None),
         or_(models.User.status == status, status == None)
     ).order_by(
-        and_(models.User.id.desc(), sort == '-id')
-    ).offset(skip).limit(limit).all()
+        and_(models.User.create_time.asc(), sort == '+create_time'),
+        and_(models.User.create_time.desc(), sort == '-create_time'),
+        and_(models.User.update_time.asc(), sort == '+update_time'),
+        and_(models.User.update_time.desc(), sort == '-update_time')
+    ).all()
 
 
 # 新增用户
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(name= user.name, email= user.email, password= Common.str_to_sha256(user.password), role=user.role, status=user.status)
+    db_user = models.User(
+        name= user.name,
+        email= user.email,
+        password= Common.str_to_sha256(user.password),
+        role=user.role,
+        status=user.status
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -52,20 +59,37 @@ def update_user(db: Session, user:schemas.UserUpdate, user_id):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     user_dict = user.dict()
     db_user.email = user_dict['email']
-    db_user.password = Common.str_to_sha256(user_dict['password'])
+    if user_dict['password'] :
+        db_user.password = Common.str_to_sha256(user_dict['password'])
     db_user.status = user_dict['status']
     db.commit()
     db.refresh(db_user)
     return db_user
 
-# 更新token
-def update_token(db: Session, user_id):
-    db_user = db_user = db.query(models.User).filter(models.User.id == user_id).first()
-    token = uuid.uuid4()
-    db_user.access_token = token
+
+# 删除用户
+def delete_user(db: Session, user_id):
+    db.query(models.User).filter(models.User.id == user_id).delete()
     db.commit()
-    db.refresh(db_user)
-    return token
+
+
+# 更新token
+def update_token(db: Session, user_id: int|None=None, access_token: str|None=None):
+    # 传入user_id时，更新该用户的token
+    if user_id:
+        db_user = db.query(models.User).filter(models.User.id == user_id).first()
+        token = uuid.uuid4()
+        db_user.access_token = token
+        db.commit()
+        db.refresh(db_user)
+        return token
+    # 没有传入user_id，且传入token时，删除该token值（此处暂未考虑token重复）
+    elif access_token:
+        db_user = db.query(models.User).filter(models.User.access_token == access_token).first()
+        if db_user:
+            db_user.access_token = None
+            db.commit()
+            db.refresh(db_user)
 
 
 # 查询物品
