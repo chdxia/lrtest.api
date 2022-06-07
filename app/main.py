@@ -28,4 +28,4 @@ app.include_router(logout.router, prefix=api_route_depends)
 
 @app.get(api_route_depends)
 async def root():
-    return {"message": "test2 Hello Bigger Applications!"}
+    return {"message": "Hello Bigger Applications!"}
