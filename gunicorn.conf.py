@@ -2,12 +2,13 @@
 gunicorn配置文件
 参考文档:https://docs.gunicorn.org/en/latest/index.html
 参考文档:https://www.uvicorn.org/deployment/
+参考文档:https://github.com/blaze33/newco-legacy/blob/master/gunicorn.conf.py.sample
 """
 
 
 # Server socket
 # 绑定HOST和PORT
-bind = '127.0.0.1:8082'
+bind = '0.0.0.0:8082'
 # Server最大连接数（64-2048）
 backlog = 2048
 

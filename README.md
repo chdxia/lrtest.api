@@ -5,7 +5,7 @@
 ```
 uvicorn app.main:app --reload --port 8082
 ```
-### pro run command:
+### prod run command:
 ```
 gunicorn app.main:app
 ```

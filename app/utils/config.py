@@ -4,20 +4,19 @@ from urllib.parse import quote
 from .log_settings import logger
 
 
-cur_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-
-
-yaml_path = os.path.join(cur_path, "config.yaml")
+# cur_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+# env_path = os.path.join(cur_path, "env.yaml")
+env_path = '~/.env/lrtest_env.yaml'
 
 
 try:
-    with open (yaml_path, 'r', encoding='utf-8') as f:
+    with open (env_path, 'r', encoding='utf-8') as f:
         config_data = yaml.load(f, Loader=yaml.FullLoader)
 except:
-    logger.error("load config.yaml fail!!!")
+    logger.error("load env.yaml fail!!!")
 
 
-# 获取配置文件的类
+# 获取配置文件
 class GetConfig():
     # 获取database_url
     def get_database_url():
