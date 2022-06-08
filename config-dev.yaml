@@ -1,6 +1,12 @@
+api_route_depends: '/api/v1'
+
 mysql:
   host: "***.***.***.***"
   port: 3306
   user: "root"
   password: "******"
   database: "******"
+
+qiniu:
+  access_key: "******"
+  secret_key: "******"

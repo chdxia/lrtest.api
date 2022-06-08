@@ -1,0 +1,20 @@
+version: '3.0'
+
+services:
+  lrtest-api:
+    image: image
+    ports:
+      - 8082:8000
+    volumes:
+      - pyenv:/root/.pyenv
+      - pipenv:/root/.cache/pipenv
+      - .:/app
+    command: >
+      bash -cx " pyenv install --skip-existing
+      && pipenv install
+      && pipenv shell
+      && uvicorn app.main:app"
+
+volumes:
+  pyenv:
+  pipenv:
