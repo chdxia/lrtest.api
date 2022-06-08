@@ -1,22 +1,13 @@
 """ 
 gunicorn配置文件
+参考文档:https://docs.gunicorn.org/en/latest/index.html
 参考文档:https://www.uvicorn.org/deployment/
-参考文档:https://github.com/blaze33/newco-legacy/blob/master/gunicorn.conf.py.sample
 """
-from uvicorn.workers import UvicornWorker
-
-
-class WorkerClass(UvicornWorker):
-    CONFIG_KWARGS = {
-        "loop": "uvloop",
-        "http": "httptools",
-        "ws": "wsproto"
-    }
 
 
 # Server socket
 # 绑定HOST和PORT
-bind = '127.0.0.1:8081'
+bind = '127.0.0.1:8082'
 # Server最大连接数（64-2048）
 backlog = 2048
 
@@ -24,7 +15,7 @@ backlog = 2048
 # Server的工作进程数,正常范围:2-4 x $(NUM_CORES)
 workers = 2
 # worker类
-worker_class = WorkerClass
+worker_class = 'uvicorn.workers.UvicornH11Worker'
 # 限制单个进程同时处理的客户端最大数量,normal:1000
 worker_connections = 1000
 # 处理单个请求所需时间,worker此时间还没有通知master进程,它将被kill并添加一个新的worker
