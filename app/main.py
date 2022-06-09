@@ -18,7 +18,7 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="lrtest",
     version="1.0.0",
-    description="lrtest",
+    description="this is lrtest swagger docs",
     openapi_url="{depends}/openapi.json".format(depends=api_route_depends),
     docs_url="{depends}/docs".format(depends=api_route_depends)
 )
