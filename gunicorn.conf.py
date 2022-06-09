@@ -19,7 +19,7 @@ workers = 2
 worker_class = 'uvicorn.workers.UvicornH11Worker'
 # 限制单个进程同时处理的客户端最大数量,normal:1000
 worker_connections = 1000
-# 处理单个请求所需时间,worker此时间还没有通知master进程,它将被kill并添加一个新的worker
+# 处理单个请求所需时间,worker在此时间内没有通知master进程,它将被kill并添加一个新的worker
 timeout = 30
 # normal:1-5
 keepalive = 2

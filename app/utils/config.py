@@ -6,7 +6,8 @@ from .log_settings import logger
 
 # cur_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 # env_path = os.path.join(cur_path, "env.yaml")
-env_path = '~/.env/lrtest_env.yaml'
+home_path = os.environ['HOME']
+env_path = os.path.join(home_path, '.env', 'lrtest_env.yaml')
 
 
 try:
