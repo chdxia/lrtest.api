@@ -54,13 +54,13 @@ class User(BaseModel):
     class Config:
             orm_mode = True
 
-class totalUser(BaseModel):
-    total: int
-    users: list[User]
-
 class responseUser(BaseModel):
     code: int
     data: User
+
+class totalUser(BaseModel):
+    total: int
+    users: list[User]
 
 class responseUsers(BaseModel):
     code: int
