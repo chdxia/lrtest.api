@@ -19,8 +19,8 @@ app = FastAPI(
     title="lrtest",
     version="1.0.0",
     description="this is lrtest swagger docs",
-    openapi_url="{depends}/openapi.json".format(depends=api_route_depends),
-    docs_url="{depends}/docs".format(depends=api_route_depends)
+    openapi_url=f'{api_route_depends}/openapi.json',
+    docs_url=f'{api_route_depends}/docs'
 )
 
 

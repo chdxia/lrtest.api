@@ -26,8 +26,8 @@ def get_users(
     sort: str|None = '+create_time'
 ):
     return db.query(models.User).filter(
-        or_(models.User.name.like('%{n}%'.format(n=name)), name == None),
-        or_(models.User.email.like('%{e}%'.format(e=email)), email == None),
+        or_(models.User.name.like(f'%{name}%'), name == None),
+        or_(models.User.email.like(f'%{email}%'), email == None),
         or_(models.User.access_token == access_token, access_token == None),
         or_(models.User.role == role, role == None),
         or_(models.User.status == status, status == None)
@@ -96,8 +96,8 @@ def update_token(db: Session, user_id: int|None=None, access_token: str|None=Non
 def get_items(db: Session, user_id: int|None=None, title: str|None=None, description: str|None=None, skip: int =0, limit: int =10):
     return db.query(models.Item).filter(
         or_(models.Item.owner_id == user_id, user_id == None),
-        or_(models.Item.title.like('%{title}%'.format(title=title)), title == None),
-        or_(models.Item.description.like('%{description}%'.format(description=description)), description == None)
+        or_(models.Item.title.like(f'%{title}%'), title == None),
+        or_(models.Item.description.like(f'%{description}%'), description == None)
     ).offset(skip).limit(limit).all()
 
 

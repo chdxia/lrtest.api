@@ -29,7 +29,8 @@ class GetConfig():
             database = config_data["mysql"]["database"]
         except:
             logger.error("mysql config error!!!")
-        return "mysql+pymysql://{u}:{p}@{host}:{port}/{db}?charset=utf8".format(u=user, p=password, host=host, port=port, db=database)
+        return f'mysql+pymysql://{user}:{password}@{host}:{port}/{database}?charset=utf8'
+
 
     # 获取api_route_depends
     def get_api_route_depends():
