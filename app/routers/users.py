@@ -1,9 +1,7 @@
-from sre_constants import SUCCESS
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..db import crud, schemas
 from ..db.database import get_db
-from ..utils.log_settings import logger
 from ..utils.common import Common
 
 
@@ -28,7 +26,6 @@ async def get_users(
 ):
     db_user = crud.get_users(db, name=name, email=email, role=role, status=status, sort=sort)
     paginated_user = list(db_user)[(page-1)*limit:(page-1)*limit+limit]
-    logger.info("查询用户")
     return {"code": 20000, "data": dict({"total":len(list(db_user)), "users":paginated_user})}
 
 
