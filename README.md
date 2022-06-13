@@ -3,7 +3,7 @@
 ### dev run command:
 
 ```
-uvicorn app.main:app --reload --port 8082
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8082
 ```
 ### prod run command:
 ```

@@ -1,3 +1,4 @@
+import time
 from fastapi import Depends, FastAPI, Request
 from .dependencies import get_token_header
 from .internal import login
@@ -22,6 +23,19 @@ app = FastAPI(
     openapi_url=f'{api_route_depends}/openapi.json',
     docs_url=f'{api_route_depends}/docs'
 )
+
+
+# 记录请求日志
+@app.middleware('http')
+async def log_requests(request, call_next):
+    start_time = time.time()
+
+    response = await call_next(request)
+
+    process_time = (time.time() - start_time) * 1000
+    formatted_process_time = '{0:.2f}'.format(process_time)
+    logger.info(f'{request.method} {request.url} completed_in={formatted_process_time}ms status_code={response.status_code}')
+    return response
 
 
 @app.post(api_route_depends, responses={404: {"description": "Not found"}}, tags=["hello_word"], summary='返回请求信息')
