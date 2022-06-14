@@ -1,5 +1,4 @@
 .DS_Store
 *__pycache__
-Pipfile.lock
 /logs
 lrtest_env.yaml
