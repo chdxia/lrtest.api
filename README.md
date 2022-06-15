@@ -25,7 +25,7 @@ rm -rf /root/lrtest-api/*
 ```
 
 - 构建：pass
-- 构建后操作：Send files or execute commands over SSH
+- 构建后操作：Send build artifacts over SSH
 
 ```shell
 # Source files
