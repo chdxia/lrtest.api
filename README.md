@@ -34,7 +34,6 @@ rm -rf /root/lrtest-api/*
 /root/lrtest-api
 # Exec command
 cd /root/lrtest-api
-pkill -f gunicorn
-pipenv install
-pipenv run gunicorn app.main:app
+chmod u+x run.sh
+./run.sh
 ```
