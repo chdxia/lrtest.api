@@ -1,4 +1,4 @@
-# Lrtest
+# lrtest-api
 
 prod访问：http://lrtest.chdxia.com
 接口文档地址：http://lrtest.chdxia.com/api/v1/docs
