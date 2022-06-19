@@ -130,12 +130,12 @@ def update_item(db: Session, item: schemas.ItemUpdate, item_id: int):
     return db_item
 
 
-# 查询文件
+# 查询文件外链
 def get_files(db: Session):
     return db.query(models.File).all()
 
 
-# 新增文件
+# 新增文件外链
 def create_file(db: Session, url: str):
     db_file = db.query(models.File).filter(models.File.url == url).first()
     if not db_file:

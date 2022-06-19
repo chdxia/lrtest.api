@@ -10,7 +10,7 @@ from ..utils.log_settings import logger
 
 router = APIRouter(
     prefix="/qiniu",
-    tags=["七牛云"],
+    tags=["七牛云存储"],
     responses={404: {"description": "Not found"}}
 )
 
@@ -20,12 +20,12 @@ async def read_files(db: Session=Depends(get_db)):
     return {"code": 20000, "data": crud.get_files(db=db)}
 
 
-@router.post("/callback", summary='七牛回调,保存文件的url')
+@router.post("/callback", summary='七牛回调')
 async def qiniu_callback(data: schemas.FileCreate, db: Session=Depends(get_db)):
     new_file = crud.create_file(db=db, url= get_qiniu_config()['external_link_base'] + '/' + data.key)
-    return {"code": 20000, "data": "success"}
+    return {"code": 20000, "data": dict({"key": data.key, "hash": data.hash})}
 
 
 @router.get("/upload/token", summary='获取七牛token')
-async def get_upload_token(key: str):
-    return {"code": 20000, "data": dict({"token": qiniu_upload_token(key), "url": get_qiniu_config()['external_link_base'] + '/' + key})}
+async def get_upload_token():
+    return {"code": 20000, "data": dict({"token": qiniu_upload_token()})}

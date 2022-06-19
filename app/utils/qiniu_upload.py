@@ -6,7 +6,7 @@ from .config import get_qiniu_config
 config = get_qiniu_config()
 
 
-def qiniu_upload_token(key):
+def qiniu_upload_token():
     bucket = get_qiniu_config()['bucket']
     access_key = get_qiniu_config()['access_key']
     secret_key = get_qiniu_config()['secret_key']
@@ -15,4 +15,4 @@ def qiniu_upload_token(key):
         "callbackBodyType": "application/json",
         "callbackBody": json.dumps({"key":"$(key)","hash":"$(etag)"})
     }
-    return qiniu.Auth(access_key, secret_key).upload_token(bucket, key, 3600, policy)
+    return qiniu.Auth(access_key, secret_key).upload_token(bucket=bucket, key=None, policy=policy)
