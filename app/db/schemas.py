@@ -70,7 +70,6 @@ class Items(BaseModel):
 # 七牛
 class FileCreate(BaseModel):
     key: str
-    hash: str
 
 class File(BaseModel):
     id: int

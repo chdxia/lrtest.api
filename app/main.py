@@ -46,4 +46,4 @@ async def return_info(*, request: Request):
 app.include_router(login.router, prefix=get_api_route_depends())
 app.include_router(users.router, prefix=get_api_route_depends(), dependencies=[Depends(get_token_header)])
 app.include_router(items.router, prefix=get_api_route_depends(), dependencies=[Depends(get_token_header)])
-app.include_router(qiniu.router, prefix=get_api_route_depends(), dependencies=[Depends(get_token_header)])
+app.include_router(qiniu.router, prefix=get_api_route_depends())

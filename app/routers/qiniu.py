@@ -20,21 +20,10 @@ async def read_files(db: Session=Depends(get_db)):
     return {"code": 20000, "data": crud.get_files(db=db)}
 
 
-""" @router.post("/callback", summary='七牛回调,保存文件的url')
-async def qiniu_callback(data: schemas.FileCreate, db: Session=Depends(get_db)):
-    link_base = get_qiniu_config()['external_link_base']
-    key = data.key
-    new_file = crud.create_file(db=db, url= f'{link_base}/{key}')
-    logger.info(str(new_file))
-    return {"code": 20000, "data": "success"} """
-
-
 @router.post("/callback", summary='七牛回调,保存文件的url')
-async def qiniu_callback(*, request: Request):
-    req = Common.get_request_info(request)
-    req.update({"body": await request.json()})
-    logger.info(str(req))
-    return req
+async def qiniu_callback(data: schemas.FileCreate, db: Session=Depends(get_db)):
+    new_file = crud.create_file(db=db, url= get_qiniu_config()['external_link_base'] + '/' + data.key)
+    return {"code": 20000, "data": "success"}
 
 
 @router.get("/upload/token", summary='获取七牛token')

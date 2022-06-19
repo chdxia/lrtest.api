@@ -12,6 +12,6 @@ def qiniu_upload_token(key):
     policy = {
         'callbackUrl': get_qiniu_config()['callback_url'],
         'callbackBodyType': 'application/json',
-        'callbackBody': 'key=$(key)&hash=$(etag)'
+        'callbackBody': {'key':"$(key)", 'hash':'$(etag)'}
     }
     return qiniu.Auth(access_key, secret_key).upload_token(bucket, key, 3600, policy)
