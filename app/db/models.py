@@ -9,9 +9,9 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(64))
-    email = Column(String(64), unique=True, nullable=False, index=True)
+    email = Column(String(64), unique=True, nullable=False)
     password = Column(String(64))
-    access_token = Column(String(64), default=None, index=True)
+    access_token = Column(String(64), default=None)
     role = Column(Integer, nullable=False)
     status = Column(Boolean, default=True, nullable=False)
     create_time = Column(DateTime, default=datetime.now)
@@ -35,4 +35,4 @@ class Item(Base):
 class File(Base):
     __tablename__ = "files"
     id = Column(Integer, primary_key=True, index=True)
-    url = Column(String(128), unique=True, nullable=False, index=True)
+    url = Column(String(128), unique=True, nullable=False)
