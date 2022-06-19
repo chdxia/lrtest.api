@@ -6,6 +6,8 @@ Jenkins地址：http://jenkins.chdxia.com
 
 接口文档地址：http://lrtest.chdxia.com/api/v1/docs
 
+*提示：请修改./app/utils/config.py中的配置信息
+
 ### dev run command:
 
 ```shell

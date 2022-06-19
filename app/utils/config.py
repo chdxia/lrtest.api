@@ -4,6 +4,7 @@ from urllib.parse import quote
 from .log_settings import logger
 
 
+# 这样做是为了在public仓库隐藏自己的配置信息，如需使用，请修改为正确的配置文件路径
 # cur_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 # env_path = os.path.join(cur_path, "env.yaml")
 home_path = os.environ['HOME']
