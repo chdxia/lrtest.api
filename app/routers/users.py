@@ -7,13 +7,12 @@ from ..utils.common import Common
 
 router = APIRouter(
     prefix="/users",
-    tags=["users"],
+    tags=["用户"],
     responses={404: {"description": "Not found"}}
 )
 
 
-# 查询用户
-@router.get("", response_model=schemas.responseUsers, summary='查询用户')
+@router.get("", response_model=schemas.UsersResponse, summary='查询用户')
 async def get_users(
     name: str|None=None,
     email: str|None=None,
@@ -29,8 +28,16 @@ async def get_users(
     return {"code": 20000, "data": dict({"total":len(list(db_user)), "users":paginated_user})}
 
 
-# 获取当前用户信息
-@router.get("/info")
+@router.post("", response_model=schemas.UserResponse, summary='新增用户')
+async def create_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
+    # 验证邮箱是否已存在
+    db_user= crud.get_user_by_email(db, email=user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="email already existed!")
+    return {"code": 20000, "data": crud.create_user(db=db, user=user)}
+
+
+@router.get("/info", summary='查询当前用户信息')
 async def get_info():
     return {
         "code":20000,
@@ -43,8 +50,7 @@ async def get_info():
     }
 
 
-# 根据id查询用户
-@router.get("/{user_id}", response_model=schemas.User)
+@router.get("/{user_id}", response_model=schemas.User, summary='根据id查询用户')
 async def read_user(user_id: int, db: Session=Depends(get_db)):
     db_user= crud.get_user_by_id(db, user_id=user_id)
     if db_user is None:
@@ -52,25 +58,7 @@ async def read_user(user_id: int, db: Session=Depends(get_db)):
     return db_user
 
 
-# 根据用户id查询物品
-@router.get("/{user_id}/items", response_model=list[schemas.Item])
-async def get_items_by_userid(user_id: int, title: str|None=None, description: str|None=None, page: int=1, limit: int=10, db: Session=Depends(get_db)):
-    db_items= crud.get_items(db, user_id=user_id, title=title, description=description, skip=Common.page_to_skip(page, limit), limit=limit)
-    return db_items
-
-
-# 新增用户
-@router.post("", response_model=schemas.responseUser)
-async def create_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
-    # 验证邮箱是否已存在
-    db_user= crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="email already existed!")
-    return {"code": 20000, "data": crud.create_user(db=db, user=user)}
-
-
-# 修改用户
-@router.put('/{user_id}', response_model=schemas.responseUser)
+@router.put('/{user_id}', response_model=schemas.UserResponse, summary='修改用户')
 async def update_user(user_id: int, user: schemas.UserUpdate, db:Session=Depends(get_db)):
     db_user= crud.get_user_by_id(db, user_id=user_id)
     if db_user is None:
@@ -78,8 +66,7 @@ async def update_user(user_id: int, user: schemas.UserUpdate, db:Session=Depends
     return {"code": 20000, "data": crud.update_user(db, user=user, user_id=user_id)}
 
 
-# 删除用户
-@router.delete('/{user_id}', response_model=schemas.responseUser)
+@router.delete('/{user_id}', response_model=schemas.UserResponse, summary='删除用户')
 async def delete_user(user_id: int, db:Session=Depends(get_db)):
     db_user = crud.get_user_by_id(db, user_id=user_id)
     if db_user is None:
@@ -88,8 +75,13 @@ async def delete_user(user_id: int, db:Session=Depends(get_db)):
     return {"code": 20000, "data": db_user}
 
 
-# 新增物品
-@router.post("/{user_id}/items", response_model= schemas.Item)
+@router.get("/{user_id}/items", response_model=list[schemas.Item], summary='根据用户id查询物品')
+async def get_items_by_userid(user_id: int, title: str|None=None, description: str|None=None, page: int=1, limit: int=10, db: Session=Depends(get_db)):
+    db_items= crud.get_items(db, user_id=user_id, title=title, description=description, skip=Common.page_to_skip(page, limit), limit=limit)
+    return db_items
+
+
+@router.post("/{user_id}/items", response_model= schemas.Item, summary='新增物品')
 async def create_item_for_user(
     user_id: int,
     item: schemas.ItemCreate,

@@ -1,3 +1,4 @@
+from urllib.request import url2pathname
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
 import uuid
@@ -127,3 +128,19 @@ def update_item(db: Session, item: schemas.ItemUpdate, item_id: int):
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+# 查询文件
+def get_files(db: Session):
+    return db.query(models.File).all()
+
+
+# 新增文件
+def create_file(db: Session, url: str):
+    db_file = db.query(models.File).filter(models.File.url == url).first()
+    if not db_file:
+        new_file = models.File(url = url)
+        db.add(new_file)
+        db.commit()
+        db.refresh(new_file)
+        return new_file

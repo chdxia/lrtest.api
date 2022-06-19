@@ -6,11 +6,11 @@ from ..utils.common import Common
 
 
 router = APIRouter(
-    tags=["login"],
+    tags=["登录"],
     responses={404: {"description": "Not found"}}
 )
 
-@router.post("/login")
+@router.post("/login", summary='登录')
 async def login(body: schemas.UserLogin, db: Session=Depends(get_db)):  
     db_user = crud.get_user_by_email(db, email=body.email)
     if db_user is None:
@@ -23,7 +23,7 @@ async def login(body: schemas.UserLogin, db: Session=Depends(get_db)):
         raise HTTPException(status_code=400, detail="email or password is incorrect")
 
 
-@router.post("/logout")
+@router.delete("/logout", summary='退出登录')
 async def logout(X_Token: str=Header(None) , db: Session=Depends(get_db)):
     if X_Token:
         crud.update_token(db, access_token=X_Token)

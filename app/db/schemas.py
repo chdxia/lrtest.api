@@ -2,6 +2,44 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+# 用户
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
+class UserCreate(UserLogin):
+    name: str|None=None
+    role: int
+    status: bool
+
+class UserUpdate(UserCreate):
+    password: str|None=None
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+    role: int
+    status: bool
+    create_time: datetime
+    update_time: datetime
+
+    class Config:
+            orm_mode = True
+
+class UserResponse(BaseModel):
+    code: int
+    data: User
+
+class UserTotal(BaseModel):
+    total: int
+    users: list[User]
+
+class UsersResponse(BaseModel):
+    code: int
+    data: UserTotal
+
+
 # 物品
 class ItemBase(BaseModel):
     title: str|None=None
@@ -29,39 +67,18 @@ class Items(BaseModel):
     data: list[Item]
 
 
-# 用户
-class UserLogin(BaseModel):
-    email: str
-    password: str
+# 七牛
+class FileCreate(BaseModel):
+    key: str
+    bash: str
 
-class UserCreate(UserLogin):
-    name: str|None=None
-    role: int
-    status: bool
-
-class UserUpdate(UserCreate):
-    password: str|None=None
-
-class User(BaseModel):
+class File(BaseModel):
     id: int
-    name: str
-    email: str
-    role: int
-    status: bool
-    create_time: datetime
-    update_time: datetime
+    url: str
 
     class Config:
             orm_mode = True
 
-class responseUser(BaseModel):
+class Files(BaseModel):
     code: int
-    data: User
-
-class totalUser(BaseModel):
-    total: int
-    users: list[User]
-
-class responseUsers(BaseModel):
-    code: int
-    data: totalUser
+    data: list[File]
