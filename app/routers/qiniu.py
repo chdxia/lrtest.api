@@ -21,8 +21,8 @@ async def read_files(db: Session=Depends(get_db)):
 
 
 @router.post("/callback", summary='七牛回调,保存文件的url')
-async def qiniu_callback(file: schemas.FileCreate, db: Session=Depends(get_db)):
-    new_file = crud.create_file(db=db, url= get_qiniu_config()['external_link_base'] + '/' + file.key)
+async def qiniu_callback(data: schemas.FileCreate, db: Session=Depends(get_db)):
+    new_file = crud.create_file(db=db, url= get_qiniu_config()['external_link_base'] + '/' + data.key)
     logger.info(str(new_file))
     return {"code": 20000, "data": "success"}
 
