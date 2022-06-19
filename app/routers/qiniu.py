@@ -17,7 +17,7 @@ router = APIRouter(
 
 @router.get("/files", response_model=schemas.Files, summary='文件列表')
 async def read_files(db: Session=Depends(get_db)):
-    return {"code": 20000, "data": crud.get_files(db=db)}
+    return {"code": 20000, "data": list(map(lambda item: item.url, crud.get_files(db=db)))}
 
 
 @router.post("/callback", summary='七牛回调')

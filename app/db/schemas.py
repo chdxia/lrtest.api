@@ -71,13 +71,6 @@ class Items(BaseModel):
 class FileCreate(BaseModel):
     key: str
 
-class File(BaseModel):
-    id: int
-    url: str
-
-    class Config:
-            orm_mode = True
-
 class Files(BaseModel):
     code: int
-    data: list[File]
+    data: list
