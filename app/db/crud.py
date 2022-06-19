@@ -132,7 +132,7 @@ def update_item(db: Session, item: schemas.ItemUpdate, item_id: int):
 
 # 查询文件外链
 def get_files(db: Session):
-    return db.query(models.File).all()
+    return db.query(models.File).order_by(models.File.id.desc()).all()
 
 
 # 新增文件外链
