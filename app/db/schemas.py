@@ -17,7 +17,7 @@ class UserUpdate(UserCreate):
 
 class User(BaseModel):
     id: int
-    name: str
+    name: str|None=None
     email: str
     role: int
     status: bool
