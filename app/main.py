@@ -7,24 +7,25 @@ from .db import models
 from .db.database import engine
 from .utils.config import get_api_route_depends
 from .utils.log_settings import logger
-from .utils.common import Common
+from .utils.common import get_request_info
 
 
 models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI(
-    title="lrtest",
-    version="1.0.0",
-    description="this is lrtest swagger docs",
+    title='lrtest',
+    version='1.0.0',
+    description='this is lrtest swagger docs',
     openapi_url=f'{get_api_route_depends()}/openapi.json',
-    docs_url=f'{get_api_route_depends()}/docs'
+    docs_url=f'{get_api_route_depends()}/docs',
+    responses={404: {"code": 40000, "message": "not found"}}
 )
 
 
-# 记录请求日志
 @app.middleware('http')
 async def log_requests(request, call_next):
+    '''中间件，记录请求日志'''
     start_time = time.time()
 
     response = await call_next(request)
@@ -35,9 +36,10 @@ async def log_requests(request, call_next):
     return response
 
 
-@app.post(get_api_route_depends(), responses={404: {"description": "Not found"}}, tags=["hello_word"], summary='返回请求信息')
+@app.post(get_api_route_depends(), tags=["hello_word"], summary='返回请求信息')
 async def return_info(*, request: Request):
-    req = Common.get_request_info(request)
+    '''返回请求信息'''
+    req = get_request_info(request)
     req.update({"body": await request.json()})
     logger.info(str(req))
     return req

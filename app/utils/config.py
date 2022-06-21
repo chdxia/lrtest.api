@@ -1,6 +1,6 @@
 import os
-import yaml
 from urllib.parse import quote
+import yaml
 from .log_settings import logger
 
 
@@ -14,21 +14,21 @@ env_path = os.path.join(home_path, '.env', 'lrtest_env.yaml')
 try:
     with open (env_path, 'r', encoding='utf-8') as f:
         config_data = yaml.load(f, Loader=yaml.FullLoader)
-except:
+except IOError:
     logger.error("load env.yaml fail!!!")
 
 
-# 获取api_route_depends
 def get_api_route_depends():
+    '''获取api_route_depends'''
     try:
         api_route_depends = config_data["api_route_depends"]
         return api_route_depends
-    except:
+    except KeyError:
         logger.error('api_route_depends config error!!!')
 
 
-# 获取database_url
 def get_database_url():
+    '''获取database_url'''
     try:
         host = config_data["mysql"]["host"]
         port = config_data["mysql"]["port"]
@@ -36,12 +36,12 @@ def get_database_url():
         password = quote(config_data["mysql"]["password"])
         database = config_data["mysql"]["database"]
         return f'mysql+pymysql://{user}:{password}@{host}:{port}/{database}?charset=utf8'
-    except:
+    except KeyError:
         logger.error('mysql config error!!!')
 
 
-# 获取七牛配置
 def get_qiniu_config():
+    '''获取七牛配置'''
     try:
         bucket = config_data["qiniu"]["bucket"]
         access_key = config_data["qiniu"]["access_key"]
@@ -55,5 +55,5 @@ def get_qiniu_config():
             "callback_url": callback_url,
             "external_link_base": external_link_base
         }
-    except:
+    except KeyError:
         logger.error('qiniu config error!!!')

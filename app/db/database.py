@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 from ..utils.config import get_database_url
 
 
@@ -14,12 +14,13 @@ engine = create_engine(get_database_url(), pool_recycle=10800)
 SessionLocal =  sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
-    db = SessionLocal()
+    '''db_session'''
+    db_session = SessionLocal()
     try:
-        yield db
+        yield db_session
     finally:
         # 关闭会话
-        db.close()
+        db_session.close()
 
 
 Base = declarative_base()

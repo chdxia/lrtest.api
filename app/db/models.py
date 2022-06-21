@@ -4,8 +4,8 @@ from sqlalchemy.orm import relationship
 from .database import Base
 
 
-# users表
 class User(Base):
+    '''users表'''
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(64))
@@ -19,8 +19,8 @@ class User(Base):
     items = relationship("Item", back_populates="owner")
 
 
-# items表
 class Item(Base):
+    '''items表'''
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(64))
@@ -31,8 +31,8 @@ class Item(Base):
     owner = relationship("User", back_populates="items")
 
 
-# files表
 class File(Base):
+    '''files表'''
     __tablename__ = "files"
     id = Column(Integer, primary_key=True, index=True)
     url = Column(String(128), unique=True, nullable=False)

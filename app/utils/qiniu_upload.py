@@ -1,5 +1,5 @@
-import qiniu
 import json
+import qiniu
 from .config import get_qiniu_config
 
 
@@ -7,6 +7,7 @@ config = get_qiniu_config()
 
 
 def qiniu_upload_token():
+    '''生成七牛upload_token'''
     bucket = get_qiniu_config()['bucket']
     access_key = get_qiniu_config()['access_key']
     secret_key = get_qiniu_config()['secret_key']
