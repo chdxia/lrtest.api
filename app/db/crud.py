@@ -88,13 +88,13 @@ def update_token(db_session: Session, user_id: int|None=None, access_token: str|
             db_session.refresh(db_user)
 
 
-def get_items(db_session:Session, user_id:int|None=None, title:str|None=None, description:str|None=None, skip:int =0, limit:int =10):
+def get_items(db_session:Session, user_id:int|None=None, title:str|None=None, description:str|None=None):
     '''查询物品'''
     return db_session.query(models.Item).filter(
         or_(models.Item.owner_id == user_id, user_id is None),
         or_(models.Item.title.like(f'%{title}%'), title is None),
         or_(models.Item.description.like(f'%{description}%'), description is None)
-    ).offset(skip).limit(limit).all()
+    ).all()
 
 
 def get_item_by_id(db_session: Session, item_id= int):

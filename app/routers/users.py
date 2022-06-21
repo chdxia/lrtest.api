@@ -22,7 +22,7 @@ async def get_users(
     db_session: Session=Depends(get_db)
 ):
     '''查询用户'''
-    db_user = crud.get_users(db_session, name, email, role, status, sort)
+    db_user = crud.get_users(db_session, name=name, email=email, role=role, status=status, sort=sort)
     paginated_users = list(db_user)[(page-1)*limit:(page-1)*limit+limit]
     return {"code": 20000, "message": "success", "data": dict({"total":len(list(db_user)), "users":paginated_users})}
 
@@ -83,7 +83,7 @@ async def delete_user(user_id: int, db_session:Session=Depends(get_db)):
 @router.get("/{user_id}/items", response_model=schemas.ItemsResponse, summary='根据用户id查询物品')
 async def get_items_by_userid(user_id: int, title: str|None=None, description: str|None=None, page: int=1, limit: int=10, db_session: Session=Depends(get_db)):
     '''根据用户id查询物品'''
-    db_items= crud.get_items(db_session, user_id, title, description)
+    db_items= crud.get_items(db_session, user_id=user_id, title=title, description=description)
     paginated_items = list(db_items)[(page-1)*limit:(page-1)*limit+limit]
     return {"code": 20000, "message": "success", "data": paginated_items}
 

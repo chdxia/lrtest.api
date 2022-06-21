@@ -13,7 +13,7 @@ router = APIRouter(
 @router.get("", response_model=schemas.ItemsResponse, summary='查询物品')
 async def read_items(title: str|None=None, description: str|None=None, page: int=1, limit: int=10, db_session: Session=Depends(get_db)):
     '''查询物品'''
-    db_items = crud.get_items(db_session, title, description)
+    db_items = crud.get_items(db_session, title=title, description=description)
     paginated_items = list(db_items)[(page-1)*limit:(page-1)*limit+limit]
     return {"code": 20000, "message": "success", "data": paginated_items}
 
