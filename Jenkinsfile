@@ -14,7 +14,7 @@ pipeline {
         sshCommand remote: server, command: "rm -rf /root/lrtest-api"
       }
     }
-    stage('部署文件') {
+    stage('远程部署') {
       steps {
         sshPut remote: server, from: '/var/jenkins_home/workspace/lrtest-api', into: '/root'
       }
