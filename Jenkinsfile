@@ -8,8 +8,10 @@ pipeline {
   }
   stages {
     stage('clone代码') {
-      sh 'rm -rf /var/jenkins_home/workspace/lrtest-api/*'
-      git branch: 'dev', credentialsId: '0b3a8b2d-b1fc-4935-89ec-516e8dd18b58', url: 'git@github.com:chdxia/lrtest-api.git'
+      steps {
+        sh 'rm -rf /var/jenkins_home/workspace/lrtest-api/*'
+        git branch: 'dev', credentialsId: '0b3a8b2d-b1fc-4935-89ec-516e8dd18b58', url: 'git@github.com:chdxia/lrtest-api.git'
+      }
     }
   }
 }
