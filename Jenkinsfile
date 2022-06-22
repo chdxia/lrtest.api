@@ -14,7 +14,9 @@ pipeline {
       }
     }
     stage('停止服务') {
-      sshCommand remote: server, command: "ls -a"
+      steps {
+        sshCommand remote: server, command: "ls -a"
+      }
     }
   }
 }
