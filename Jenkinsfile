@@ -7,11 +7,12 @@ pipeline {
     timeout(time: 1, unit: 'HOURS') 
   }
   stages {
-    def sshServer = getServer()
     stage('停止服务') {
+      def sshServer = getServer()
       sshCommand remote: sshServer, command: "echo 'hello word'"
     }
     stage('远程部署') {
+      def sshServer = getServer()
       sshCommand remote: sshServer, command: "echo 'hello word'"
     }
   }
