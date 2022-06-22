@@ -16,7 +16,7 @@ pipeline {
     stage('停止服务') {
       steps {
         script {
-          sshCommand remote: server, command: "pwd"
+          sshCommand remote: server, command: "sudo wd"
         }
       }
     }
@@ -26,7 +26,7 @@ pipeline {
 
 def getServer() {
     def remote = [:]
-    remote.name = "server"
+    remote.name = "root"
     remote.host = "ssh.chdxia.com"
     remote.port = "22"
     remote.allowAnyHosts = true
