@@ -16,7 +16,7 @@ pipeline {
     stage('停止服务') {
       steps {
         script {
-          sshCommand remote: server, command: "echo 'hello word'"
+          sshCommand remote: server, command: "pwd"
         }
       }
     }
