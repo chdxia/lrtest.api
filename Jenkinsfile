@@ -16,7 +16,7 @@ pipeline {
     }
     stage('远程部署') {
       steps {
-        sshPut remote: server, from: '/var/jenkins_home/workspace/lrtest-api', into: '/root'
+        sshPut remote: server, from: "/var/jenkins_home/workspace/lrtest-api", into: "/root"
       }
     }
     stage('重启服务') {
@@ -36,9 +36,9 @@ def getServer() {
     remote.allowAnyHosts = true
 
     withCredentials([usernamePassword(
-        credentialsId: 'a477bfd8-880b-4d82-ae37-eecaa6e0133d',
-        usernameVariable: 'username',
-        passwordVariable: 'password'
+        credentialsId: "a477bfd8-880b-4d82-ae37-eecaa6e0133d",
+        usernameVariable: "username",
+        passwordVariable: "password"
     )]) {
         remote.user = "${username}"
         remote.password = "${password}"
