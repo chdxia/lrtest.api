@@ -2,7 +2,7 @@ version: '3.0'
 
 services:
   lrtest-api:
-    image: image
+    image: unfinished
     ports:
       - 8082:8082
     volumes:
