@@ -13,11 +13,6 @@ pipeline {
         }
       }
     }
-    stage('停止服务') {
-      steps {
-        sshCommand remote: server, command: "pkill gunicorn"
-      }
-    }
     stage('清理文件') {
       steps {
         sshCommand remote: server, command: "rm -rf /root/lrtest-api/*"
@@ -28,9 +23,9 @@ pipeline {
         sshPut remote: server, from: '', into: '/root/lrtest-api'
       }
     }
-    stage('启动服务') {
+    stage('重启服务') {
       steps {
-        sshCommand remote: server, command: "cd /root/lrtest-api && pipenv install && pipenv run gunicorn app.main:app"
+        sshCommand remote: server, command: "cd /root/lrtest-api && chmod u+x run.sh && ./run.sh"
       }
     }
   }
