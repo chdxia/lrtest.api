@@ -7,10 +7,9 @@ pipeline {
     timeout(time: 1, unit: 'HOURS') 
   }
   stages {
-    stage('clone代码') {
+    stage('示例') {
       steps {
-        sh 'rm -rf /var/jenkins_home/workspace/lrtest-api/*'
-        git branch: 'dev', credentialsId: '0b3a8b2d-b1fc-4935-89ec-516e8dd18b58', url: 'git@github.com:chdxia/lrtest-api.git'
+        echo 'hello word'
       }
     }
   }
