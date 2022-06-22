@@ -9,7 +9,7 @@ pipeline {
   stages {
     stage('示例') {
       steps {
-        echo 'hello word'
+        cat run.sh
       }
     }
   }
