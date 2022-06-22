@@ -15,12 +15,12 @@ pipeline {
     }
     stage('清理文件') {
       steps {
-        sshCommand remote: server, command: "rm -rf /root/lrtest-api/*"
+        sshCommand remote: server, command: "rm -rf /root/lrtest-api"
       }
     }
     stage('部署文件') {
       steps {
-        sshPut remote: server, from: '/var/jenkins_home/workspace/lrtest-api', into: '/root/lrtest-api'
+        sshPut remote: server, from: '/var/jenkins_home/workspace/lrtest-api', into: '/root'
       }
     }
     stage('重启服务') {
