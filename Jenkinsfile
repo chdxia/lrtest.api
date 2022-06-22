@@ -16,7 +16,7 @@ pipeline {
     stage('停止服务') {
       steps {
         script {
-          echo server.name
+          echo server.user
         }
       }
     }
