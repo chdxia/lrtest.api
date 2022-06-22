@@ -25,7 +25,7 @@ pipeline {
     }
     stage('部署文件') {
       steps {
-        sshPut remote: server, from: '*', into: '/root/lrtest-api'
+        sshPut remote: server, from: '', into: '/root/lrtest-api'
       }
     }
     stage('启动服务') {
