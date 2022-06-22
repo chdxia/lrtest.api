@@ -17,6 +17,7 @@ pipeline {
       steps {
         script {
           echo server.user
+          sshCommand remote: server, command: "pwd"
         }
       }
     }
