@@ -15,7 +15,7 @@ pipeline {
     }
     stage('停止服务') {
       steps {
-        sshCommand remote: server, command: "pkill gunicorn && rm -rf /root/lrtest-api/*"
+        sshCommand remote: server, command: "pkill gunicorn"
       }
     }
     stage('清理文件') {
