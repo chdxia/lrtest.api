@@ -16,7 +16,7 @@ pipeline {
     stage('停止服务') {
       steps {
         script {
-          sshCommand remote: server, command: "sudo wd"
+          echo server.name
         }
       }
     }
@@ -33,11 +33,11 @@ def getServer() {
 
     withCredentials([usernamePassword(
         credentialsId: 'a477bfd8-880b-4d82-ae37-eecaa6e0133d',
-        usernameVariable: 'userName',
-        passwordVariable: 'password'
+        usernameVariable: 'UserName',
+        passwordVariable: 'Password'
     )]) {
-        remote.user = "${userName}"
-        remote.password = "${password}"
+        remote.user = "${UserName}"
+        remote.password = "${Password}"
     }
     return remote
 }
