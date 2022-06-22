@@ -1,16 +1,23 @@
 pipeline {
-  agent {
-    label 'master'
-  }
+  agent {label 'master'}
   options {
     skipStagesAfterUnstable()
     timeout(time: 1, unit: 'HOURS') 
   }
+  environment {def server = ''}
   stages {
-    stage('停止服务') {
-      def sshServer = getServer()
+    stage('init_server') {
       steps {
-        sshCommand remote: sshServer, command: "echo 'hello word'"
+        script {
+          server = getServer()
+        }
+      }
+    }
+    stage('停止服务') {
+      steps {
+        script {
+          sshCommand remote: sshServer, command: "echo 'hello word'"
+        }
       }
     }
   }
