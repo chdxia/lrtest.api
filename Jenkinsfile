@@ -15,10 +15,7 @@ pipeline {
     }
     stage('停止服务') {
       steps {
-        script {
-          echo server.user
-          sshCommand remote: server, command: "pwd"
-        }
+        sshCommand remote: server, command: "ls -a"
       }
     }
   }
@@ -27,7 +24,7 @@ pipeline {
 
 def getServer() {
     def remote = [:]
-    remote.name = "root"
+    remote.name = "ssh"
     remote.host = "ssh.chdxia.com"
     remote.port = "22"
     remote.allowAnyHosts = true
