@@ -26,7 +26,7 @@ def getServer() {
     def remote = [:]
     remote.name = "ssh"
     remote.host = "119.91.32.161"
-    remote.port = "22"
+    remote.port = 22
     remote.allowAnyHosts = true
 
     withCredentials([usernamePassword(
