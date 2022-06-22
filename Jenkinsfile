@@ -11,17 +11,17 @@ pipeline {
         script {
           server = getServer()
         }
-        sshCommand remote: server, command: "rm -rf /root/lrtest-api"
+        sshCommand remote: server, command: 'rm -rf /root/lrtest-api'
       }
     }
     stage('远程部署') {
       steps {
-        sshPut remote: server, from: "/var/jenkins_home/workspace/lrtest-api", into: "/root"
+        sshPut remote: server, from: '/var/jenkins_home/workspace/lrtest-api', into: '/root'
       }
     }
     stage('重启服务') {
       steps {
-        sshCommand remote: server, command: "cd /root/lrtest-api && chmod u+x run.sh && ./run.sh"
+        sshCommand remote: server, command: 'cd /root/lrtest-api && chmod u+x run.sh && ./run.sh'
       }
     }
   }
