@@ -6,7 +6,7 @@ pipeline {
   }
   environment {def server = ''}
   stages {
-    stage('init_server') {
+    stage('init_ssh') {
       steps {
         script {
           server = getServer()
@@ -15,7 +15,22 @@ pipeline {
     }
     stage('停止服务') {
       steps {
+        sshCommand remote: server, command: "pkill gunicorn && rm -rf /root/lrtest-api/*"
+      }
+    }
+    stage('清理文件') {
+      steps {
         sshCommand remote: server, command: "rm -rf /root/lrtest-api/*"
+      }
+    }
+    stage('部署文件') {
+      steps {
+        sshPut remote: server, from: '*', into: '/root/lrtest-api'
+      }
+    }
+    stage('启动服务') {
+      steps {
+        sshCommand remote: server, command: "cd /root/lrtest-api && pipenv install && pipenv run gunicorn app.main:app"
       }
     }
   }
@@ -25,7 +40,7 @@ pipeline {
 def getServer() {
     def remote = [:]
     remote.name = "ssh"
-    remote.host = "119.91.32.161"
+    remote.host = "ssh.chdxia.com"
     remote.port = 22
     remote.allowAnyHosts = true
 
