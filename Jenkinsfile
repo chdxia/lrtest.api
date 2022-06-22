@@ -15,7 +15,7 @@ pipeline {
     }
     stage('停止服务') {
       steps {
-        sshCommand remote: server, command: "ls -a"
+        sshCommand remote: server, sudo: true, command: "ls -a"
       }
     }
   }
