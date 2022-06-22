@@ -6,15 +6,11 @@ pipeline {
   }
   environment {def server = ''}
   stages {
-    stage('init_ssh') {
+    stage('清理文件') {
       steps {
         script {
           server = getServer()
         }
-      }
-    }
-    stage('清理文件') {
-      steps {
         sshCommand remote: server, command: "rm -rf /root/lrtest-api"
       }
     }
@@ -41,11 +37,11 @@ def getServer() {
 
     withCredentials([usernamePassword(
         credentialsId: 'a477bfd8-880b-4d82-ae37-eecaa6e0133d',
-        usernameVariable: 'UserName',
-        passwordVariable: 'Password'
+        usernameVariable: 'username',
+        passwordVariable: 'password'
     )]) {
-        remote.user = "${UserName}"
-        remote.password = "${Password}"
+        remote.user = "${username}"
+        remote.password = "${password}"
     }
     return remote
 }
