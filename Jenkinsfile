@@ -9,7 +9,7 @@ pipeline {
   stages {
     stage('示例') {
       steps {
-        pwd
+        sh 'pwd'
       }
     }
   }
