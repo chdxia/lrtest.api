@@ -9,7 +9,7 @@ pipeline {
   stages {
     stage('示例') {
       steps {
-        cat run.sh
+        pwd
       }
     }
   }
