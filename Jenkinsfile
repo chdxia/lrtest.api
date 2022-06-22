@@ -7,13 +7,9 @@ pipeline {
     timeout(time: 1, unit: 'HOURS') 
   }
   stages {
-    stage('停止服务') {
-      def sshServer = getServer()
-      sshCommand remote: sshServer, command: "echo 'hello word'"
-    }
-    stage('远程部署') {
-      def sshServer = getServer()
-      sshCommand remote: sshServer, command: "echo 'hello word'"
+    stage('clone代码') {
+      sh 'rm -rf /var/jenkins_home/workspace/lrtest-api/*'
+      git branch: 'dev', credentialsId: '0b3a8b2d-b1fc-4935-89ec-516e8dd18b58', url: 'git@github.com:chdxia/lrtest-api.git'
     }
   }
 }
