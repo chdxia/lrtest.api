@@ -36,7 +36,7 @@ pipeline {
 def getServer() {
     def remote = [:]
     remote.name = "ssh"
-    remote.host = "ssh.chdxia.com"
+    remote.host = "chdxia.com"
     remote.port = 22
     remote.allowAnyHosts = true
 
