@@ -4,4 +4,4 @@
 /logs
 *__pycache__
 Pipfile.lock
-lrtest_env.yaml
+lrtest_config.yaml
