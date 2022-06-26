@@ -136,4 +136,4 @@ def create_file(db_session: Session, url: str):
         db_session.add(new_file)
         db_session.commit()
         db_session.refresh(new_file)
-    return new_file
+        return new_file
