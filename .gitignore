@@ -2,5 +2,6 @@
 .vscode
 .git
 *__pycache__
+Pipfile.lock
 /logs
 lrtest_env.yaml
