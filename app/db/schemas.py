@@ -27,7 +27,6 @@ class User(BaseModel):
     create_time: datetime
     update_time: datetime
     class Config:
-        '''orm_mode'''
         orm_mode = True
 
 class UserResponse(BaseModel):
@@ -68,7 +67,6 @@ class Item(BaseModel):
     create_time: datetime
     update_time: datetime
     class Config:
-        '''orm_mode'''
         orm_mode = True
 
 class ItemResponse(BaseModel):

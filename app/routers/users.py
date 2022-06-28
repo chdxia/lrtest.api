@@ -21,7 +21,6 @@ async def get_users(
     sort: str|None='+create_time',
     db_session: Session=Depends(get_db)
 ):
-    '''查询用户'''
     db_user = crud.get_users(db_session, name=name, email=email, role=role, status=status, sort=sort)
     paginated_users = list(db_user)[(page-1)*limit:(page-1)*limit+limit]
     return {"code": 20000, "message": "success", "data": dict({"total":len(list(db_user)), "users":paginated_users})}
@@ -29,7 +28,6 @@ async def get_users(
 
 @router.post("", response_model=schemas.UserResponse, summary='新增用户')
 async def create_user(user: schemas.UserCreate, db_session: Session=Depends(get_db)):
-    '''新增用户'''
     # 验证邮箱是否已存在
     db_user= crud.get_user_by_email(db_session, email=user.email)
     if db_user:
@@ -39,7 +37,6 @@ async def create_user(user: schemas.UserCreate, db_session: Session=Depends(get_
 
 @router.get("/info", summary='查询当前用户信息')
 async def get_info():
-    '''查询当前用户信息'''
     return {
         "code": 20000,
         "message": "success",
@@ -54,7 +51,6 @@ async def get_info():
 
 @router.get("/{user_id}", response_model=schemas.UserResponse, summary='根据id查询用户')
 async def read_user(user_id: int, db_session: Session=Depends(get_db)):
-    '''根据id查询用户'''
     db_user= crud.get_user_by_id(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="user not found")
@@ -63,7 +59,6 @@ async def read_user(user_id: int, db_session: Session=Depends(get_db)):
 
 @router.put('/{user_id}', response_model=schemas.UserResponse, summary='修改用户')
 async def update_user(user_id: int, user: schemas.UserUpdate, db_session:Session=Depends(get_db)):
-    '''修改用户'''
     db_user= crud.get_user_by_id(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="user not found")
@@ -72,7 +67,6 @@ async def update_user(user_id: int, user: schemas.UserUpdate, db_session:Session
 
 @router.delete('/{user_id}', response_model=schemas.UserResponse, summary='删除用户')
 async def delete_user(user_id: int, db_session:Session=Depends(get_db)):
-    '''删除用户'''
     db_user = crud.get_user_by_id(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="user not found")
@@ -82,7 +76,6 @@ async def delete_user(user_id: int, db_session:Session=Depends(get_db)):
 
 @router.get("/{user_id}/items", response_model=schemas.ItemsResponse, summary='根据用户id查询物品')
 async def get_items_by_userid(user_id: int, title: str|None=None, description: str|None=None, page: int=1, limit: int=10, db_session: Session=Depends(get_db)):
-    '''根据用户id查询物品'''
     db_items= crud.get_items(db_session, user_id=user_id, title=title, description=description)
     paginated_items = list(db_items)[(page-1)*limit:(page-1)*limit+limit]
     return {"code": 20000, "message": "success", "data": paginated_items}
@@ -94,7 +87,6 @@ async def create_item_for_user(
     item: schemas.ItemCreate,
     db_session: Session=Depends(get_db)
 ):
-    '''新增物品'''
     db_user= crud.get_user_by_id(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="user not found")

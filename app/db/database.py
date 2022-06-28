@@ -14,7 +14,6 @@ engine = create_engine(get_database_url(), pool_recycle=10800)
 SessionLocal =  sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
-    '''db_session'''
     db_session = SessionLocal()
     try:
         yield db_session

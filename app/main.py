@@ -38,7 +38,6 @@ async def log_requests(request, call_next):
 
 @app.post(get_api_route_depends(), tags=["hello_word"], summary='返回请求信息')
 async def return_info(*, request: Request):
-    '''返回请求信息'''
     req = get_request_info(request)
     req.update({"body": await request.json()})
     logger.info(str(req))
