@@ -80,14 +80,3 @@ class ItemsResponse(BaseModel):
     code: int
     message: str
     data: list[Item]
-
-
-class FileCreate(BaseModel):
-    '''新建七牛链接'''
-    key: str
-
-class FilesResponse(BaseModel):
-    '''返回七牛链接'''
-    code: int
-    message: str
-    data: list

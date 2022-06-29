@@ -17,3 +17,11 @@ def qiniu_upload_token():
         "callbackBody": json.dumps({"key":"$(key)","hash":"$(etag)"})
     }
     return qiniu.Auth(access_key, secret_key).upload_token(bucket=bucket, key=None, policy=policy)
+
+
+def get_qiniu_list():
+    '''获取文件列表'''
+    bucket = get_qiniu_config()['bucket']
+    access_key = get_qiniu_config()['access_key']
+    secret_key = get_qiniu_config()['secret_key']
+    return qiniu.BucketManager(qiniu.Auth(access_key, secret_key)).list(bucket=bucket)
