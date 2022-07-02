@@ -1,10 +1,9 @@
 import time
 from fastapi import Depends, FastAPI, Request
 from .dependencies import get_token_header
-from .internal import login
-from .routers import items, users, qiniu
-from .db import models
-from .db.database import engine
+from .routers import login, users, items, qiniu
+from .models import models
+from .database.mysql import engine
 from .utils.config import get_api_route_depends
 from .utils.log_settings import logger
 from .utils.common import get_request_info

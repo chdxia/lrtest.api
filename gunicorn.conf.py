@@ -1,9 +1,9 @@
-""" 
+'''
 gunicorn配置文件
 参考文档:https://docs.gunicorn.org/en/latest/index.html
 参考文档:https://www.uvicorn.org/deployment/
 参考文档:https://github.com/blaze33/newco-legacy/blob/master/gunicorn.conf.py.sample
-"""
+'''
 
 
 # Server socket
