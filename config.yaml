@@ -11,5 +11,5 @@ qiniu:
   bucket: "******"
   access_key: "******"
   secret_key: "******"
-  callback_url: "http://lrtest.chdxia.com/api/v1/qiniu/callback"
-  external_link_base: "http://qiniu.chdxia.com"
+  callback_url: "https://lrtest.chdxia.com/api/v1/qiniu/callback"
+  external_link_base: "https://qiniu.chdxia.com"
