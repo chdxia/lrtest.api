@@ -16,6 +16,9 @@ async def read_qiniu_files():
     url_base = get_qiniu_config()['external_link_base']
     # 七牛文件列表
     file_list = dict(qiniu_crud.get_qiniu_list()[0])['items']
+    # 列表按照上传时间降序排列
+    file_list = sorted(file_list, key= lambda item: item['putTime'])
+    file_list.reverse()
     # 只提取列表信息中的url
     url_list = list(map(lambda item: url_base + '/' + item['key'], file_list))
     return {"code": 20000, "message": "success", "data": url_list}
