@@ -10,7 +10,7 @@ class UserLogin(BaseModel):
 class UserCreate(UserLogin):
     '''创建用户'''
     name: str|None=None
-    role: int
+    role_id: int
     status: bool
 
 class UserUpdate(UserCreate):
@@ -22,7 +22,7 @@ class User(BaseModel):
     id: int
     name: str|None=None
     email: str
-    role: int
+    role_id: int
     status: bool
     create_time: datetime
     update_time: datetime

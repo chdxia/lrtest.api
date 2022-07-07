@@ -4,6 +4,7 @@ from ..database.mysql import get_db
 from ..crud import user_crud
 from ..schemas import user_schemas
 from ..utils.common import str_to_selt_sha256
+from ..permission import role_depends
 
 
 router = APIRouter(
@@ -21,7 +22,7 @@ async def login(body: user_schemas.UserLogin, db_session: Session=Depends(get_db
         raise HTTPException(status_code=400, detail="email or password is incorrect")
 
 
-@router.delete("/logout", summary='退出登录')
+@router.delete("/logout", summary='退出登录', dependencies=[Depends(role_depends())])
 async def logout(X_Token: str=Header(None) , db_session: Session=Depends(get_db)):
     if X_Token:
         user_crud.update_token(db_session, access_token=X_Token)

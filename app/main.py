@@ -1,7 +1,6 @@
 import time
-from fastapi import Depends, FastAPI, Request
-from .dependencies import get_token_header
-from .routers import login, users, items, qiniu
+from fastapi import FastAPI, Request
+from .routers import login, users, qiniu, roles
 from .models import models
 from .database.mysql import engine
 from .utils.config import get_api_route_depends
@@ -44,6 +43,6 @@ async def return_info(*, request: Request):
 
 
 app.include_router(login.router, prefix=get_api_route_depends())
-app.include_router(users.router, prefix=get_api_route_depends(), dependencies=[Depends(get_token_header)])
-app.include_router(items.router, prefix=get_api_route_depends(), dependencies=[Depends(get_token_header)])
+app.include_router(roles.router, prefix=get_api_route_depends())
+app.include_router(users.router, prefix=get_api_route_depends())
 app.include_router(qiniu.router, prefix=get_api_route_depends())

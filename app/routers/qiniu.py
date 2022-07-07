@@ -1,7 +1,8 @@
 import re
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from ..utils.config import get_qiniu_config
 from ..crud import qiniu_crud
+from ..permission import role_depends
 
 
 router = APIRouter(
@@ -10,7 +11,7 @@ router = APIRouter(
 )
 
 
-@router.get("/files", summary='获取七牛文件列表')
+@router.get("/files", summary='获取七牛文件列表', dependencies=[Depends(role_depends())])
 async def read_qiniu_files():
     # url前缀
     url_base = get_qiniu_config()['external_link_base']
@@ -24,7 +25,7 @@ async def read_qiniu_files():
     return {"code": 20000, "message": "success", "data": url_list}
 
 
-@router.delete("/files", summary='批量删除文件')
+@router.delete("/files", summary='批量删除文件', dependencies=[Depends(role_depends('admin'))])
 async def delete_qiniu_files(body: list):
     a = '12346/hhhhhhhhcom/asdf'
     b = re.search(r'/.*\b', a).group()
@@ -37,6 +38,6 @@ async def qiniu_callback(body: dict):
     return {"code": 20000, "message": "success", "data": dict({"key": body['key']})}
 
 
-@router.get("/upload/token", summary='获取七牛token')
+@router.get("/upload/token", summary='获取七牛token', dependencies=[Depends(role_depends())])
 async def get_qiniu_upload_token():
     return {"code": 20000, "message": "success", "data": dict({"token": qiniu_crud.get_qiniu_upload_token()})}

@@ -21,7 +21,7 @@ def get_users(
     name: str|None=None,
     email: str|None=None,
     access_token: str|None=None,
-    role: int|None=None,
+    role_id: int|None=None,
     status: bool|None=None,
     sort: str|None = '+create_time'
 ):
@@ -30,7 +30,7 @@ def get_users(
         or_(models.User.name.like(f'%{name}%'), name is None),
         or_(models.User.email.like(f'%{email}%'), email is None),
         or_(models.User.access_token == access_token, access_token is None),
-        or_(models.User.role == role, role is None),
+        or_(models.User.role_id == role_id, role_id is None),
         or_(models.User.status == status, status is None)
     ).order_by(
         and_(models.User.create_time.asc(), sort == '+create_time'),
@@ -42,7 +42,7 @@ def get_users(
 
 def create_user(db_session: Session, user: user_schemas.UserCreate):
     '''新增用户'''
-    db_user = models.User(name=user.name, email=user.email, password=str_to_sha256(user.password), role=user.role, status=user.status)
+    db_user = models.User(name=user.name, email=user.email, password=str_to_sha256(user.password), role_id=user.role_id, status=user.status)
     db_session.add(db_user)
     db_session.commit()
     db_session.refresh(db_user)
@@ -57,7 +57,7 @@ def update_user(db_session: Session, user:user_schemas.UserUpdate, user_id):
     db_user.email = user_dict['email']
     if user_dict['password'] :
         db_user.password = str_to_sha256(user_dict['password'])
-    db_user.role = user_dict['role']
+    db_user.role_id = user_dict['role_id']
     db_user.status = user_dict['status']
     db_session.commit()
     db_session.refresh(db_user)
