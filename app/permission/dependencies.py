@@ -1,6 +1,6 @@
 from fastapi import Header, Depends
 from sqlalchemy.orm import Session
-from ..exception import ApiException
+from ..exception.apiexception import ApiException
 from ..crud import user_crud, role_crud
 from ..database.mysql import get_mysql_db
 
