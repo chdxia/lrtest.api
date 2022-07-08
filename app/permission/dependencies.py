@@ -1,8 +1,8 @@
 from fastapi import Header, Depends
 from sqlalchemy.orm import Session
-from ..exception.apiexception import ApiException
+from ..exception import ApiException
 from ..crud import user_crud, role_crud
-from ..database.mysql import get_db
+from ..database.mysql import get_mysql_db
 
 
 class RoleDepends:
@@ -13,7 +13,7 @@ class RoleDepends:
 
     def __call__(self, *roles):
         self.roles_key = roles
-        async def get_token_header(X_Token: str = Header(...), db_session: Session=Depends(get_db)):
+        async def get_token_header(X_Token: str = Header(...), db_session: Session=Depends(get_mysql_db)):
             for item in role_crud.get_roles(db_session):
                 self.db_roles[item.role_name] = item.id
             roles_value = [self.db_roles[item] for item in self.roles_key]

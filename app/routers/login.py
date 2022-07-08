@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, Header
 from sqlalchemy.orm import Session
 from ..exception.apiexception import ApiException
-from ..database.mysql import get_db
+from ..database.mysql import get_mysql_db
 from ..crud import user_crud
 from ..schemas import user_schemas
-from ..utils.common import str_to_selt_sha256
 from ..permission import role_depends
+from ..utils import str_to_selt_sha256
 
 
 router = APIRouter(
@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 @router.post("/login", summary='登录')
-async def login(body: user_schemas.UserLogin, db_session: Session=Depends(get_db)):
+async def login(body: user_schemas.UserLogin, db_session: Session=Depends(get_mysql_db)):
     db_user = user_crud.get_user_by_email(db_session, email=body.email)
     if db_user is None:
         raise ApiException(status_code=400, content={"code": 40000, "message": "email or password is incorrect"})
@@ -24,7 +24,7 @@ async def login(body: user_schemas.UserLogin, db_session: Session=Depends(get_db
 
 
 @router.delete("/logout", summary='退出登录', dependencies=[Depends(role_depends())])
-async def logout(X_Token: str=Header(None) , db_session: Session=Depends(get_db)):
+async def logout(X_Token: str=Header(None) , db_session: Session=Depends(get_mysql_db)):
     if X_Token:
         user_crud.update_token(db_session, access_token=X_Token)
     return {"code": 20000, "message": "success"}

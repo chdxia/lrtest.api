@@ -5,9 +5,9 @@ from .routers import login, users, qiniu, roles
 from .models import models
 from .exception.apiexception import ApiException
 from .database.mysql import engine
-from .utils.config import get_api_route_depends
-from .utils.log_settings import logger
-from .utils.common import get_request_info
+from .utils import logger
+from .utils import get_api_route_depends
+from .utils import get_request_info
 
 
 models.Base.metadata.create_all(bind=engine)

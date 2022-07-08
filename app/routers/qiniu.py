@@ -1,6 +1,6 @@
 import re
 from fastapi import APIRouter, Depends
-from ..utils.config import get_qiniu_config
+from ..utils import get_qiniu_config
 from ..crud import qiniu_crud
 from ..permission import role_depends
 
