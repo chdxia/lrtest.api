@@ -3,5 +3,4 @@
 .git
 /logs
 *__pycache__
-Pipfile.lock
 lrtest_config.yaml
