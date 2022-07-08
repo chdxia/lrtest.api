@@ -1,7 +1,9 @@
 import time
 from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from .routers import login, users, qiniu, roles
 from .models import models
+from .exception.apiexception import ApiException
 from .database.mysql import engine
 from .utils.config import get_api_route_depends
 from .utils.log_settings import logger
@@ -19,6 +21,12 @@ app = FastAPI(
     docs_url=f'{get_api_route_depends()}/docs',
     responses={404: {"code": 40000, "message": "not found"}}
 )
+
+
+@app.exception_handler(ApiException)
+async def api_exception_handler(request: Request, exc: ApiException):
+    '''自定义异常处理器'''
+    return JSONResponse(status_code=exc.status_code, content=exc.content)
 
 
 @app.middleware('http')
