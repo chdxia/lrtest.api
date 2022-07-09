@@ -21,7 +21,7 @@ class RoleDepends:
             if X_Token == '233456': # 万能token，正式环境请删除
                 pass
             elif len(db_user) == 0: # X-Token无效
-                raise ApiException(status_code=400, content={"code": 40000, "message": "X-Token header invalid"})
+                raise ApiException(status_code=200, content={"code": 40000, "message": "X-Token header invalid"})
             elif len(self.roles_key) == 0: # roles参数为空时默认允许所有角色访问
                 pass
             elif [item.role_id for item in db_user] in roles_value: # 允许roles参数中的角色访问
@@ -29,5 +29,5 @@ class RoleDepends:
             elif self.db_roles['admin'] in [item.role_id for item in db_user]: # 默认允许admin访问（roles参数中可以省略admin）
                 pass
             else:
-                raise ApiException(status_code=400, content={"code": 40000, "message": "permission denied"})
+                raise ApiException(status_code=200, content={"code": 40000, "message": "permission denied"})
         return get_token_header
