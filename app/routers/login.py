@@ -15,9 +15,9 @@ router = APIRouter(
 @router.post("/login", summary='登录')
 async def login(body: user_schemas.UserLogin, db_session: Session=Depends(get_mysql_db)):
     # 支持账号or邮箱登录
-    db_user = user_crud.get_user_by_account_name(db_session, account_name=body.account_name)
+    db_user = user_crud.get_user_by_account(db_session, account=body.account)
     if db_user is None: # 账号登录失败，尝试使用邮箱登录
-        db_user_email = user_crud.get_user_by_email(db_session, email=body.account_name)
+        db_user_email = user_crud.get_user_by_email(db_session, email=body.account)
         if db_user_email is None:
             raise ApiException(status_code=400, content={"code": 40000, "message": "account or password is incorrect"})
         elif db_user_email.password == str_to_selt_sha256(body.password, db_user_email.password.split('$')[2]):

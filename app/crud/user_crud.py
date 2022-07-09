@@ -11,9 +11,9 @@ def get_user_by_id(db_session: Session, user_id: int):
     return db_session.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_by_account_name(db_session: Session, account_name: str):
+def get_user_by_account(db_session: Session, account: str):
     '''根据账号查询用户（验证账号是否已存在）'''
-    return db_session.query(models.User).filter(models.User.account_name == account_name).first()
+    return db_session.query(models.User).filter(models.User.account == account).first()
 
 
 def get_user_by_email(db_session: Session, email: str):
@@ -23,7 +23,7 @@ def get_user_by_email(db_session: Session, email: str):
 
 def get_users(
     db_session: Session,
-    account_name: str|None=None,
+    account: str|None=None,
     user_name: str|None=None,
     email: str|None=None,
     access_token: str|None=None,
@@ -33,7 +33,7 @@ def get_users(
 ):
     '''查询用户'''
     return db_session.query(models.User).filter(
-        or_(models.User.account_name.like(f'%{account_name}%'), account_name is None),
+        or_(models.User.account.like(f'%{account}%'), account is None),
         or_(models.User.user_name.like(f'%{user_name}%'), user_name is None),
         or_(models.User.email.like(f'%{email}%'), email is None),
         or_(models.User.access_token == access_token, access_token is None),
@@ -50,7 +50,7 @@ def get_users(
 def create_user(db_session: Session, user: user_schemas.UserCreate):
     '''新增用户'''
     db_user = models.User(
-        account_name=user.account_name,
+        account=user.account,
         user_name=user.user_name,
         email=user.email,
         password=str_to_sha256(user.password),
@@ -69,7 +69,7 @@ def update_user(db_session: Session, user:user_schemas.UserUpdate, user_id):
     # user_dict = user.dict()
     # db_user.name = user_dict['name']
     # db_user.email = user_dict['email']
-    db_user.account_name = user.account_name
+    db_user.account = user.account
     db_user.user_name = user.user_name
     db_user.email = user.email
     if user.email :

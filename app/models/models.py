@@ -16,7 +16,7 @@ class User(Base):
     '''users表'''
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    account_name = Column(String(64), unique=True, nullable=False)
+    account = Column(String(64), unique=True, nullable=False)
     user_name = Column(String(64))
     email = Column(String(64), unique=True, nullable=False)
     password = Column(String(64))

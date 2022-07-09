@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 class UserLogin(BaseModel):
     '''用户登录'''
-    account_name: str
+    account: str
     password: str
 
 class UserCreate(UserLogin):
@@ -21,7 +21,7 @@ class UserUpdate(UserCreate):
 class User(BaseModel):
     '''用户信息'''
     id: int
-    account_name: str
+    account: str
     user_name: str|None=None
     email: str
     role_id: int
