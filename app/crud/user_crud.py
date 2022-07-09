@@ -11,6 +11,11 @@ def get_user_by_id(db_session: Session, user_id: int):
     return db_session.query(models.User).filter(models.User.id == user_id).first()
 
 
+def get_user_by_account_name(db_session: Session, account_name: str):
+    '''根据账号查询用户（验证账号是否已存在）'''
+    return db_session.query(models.User).filter(models.User.account_name == account_name).first()
+
+
 def get_user_by_email(db_session: Session, email: str):
     '''根据邮箱查询用户（验证邮箱是否已存在）'''
     return db_session.query(models.User).filter(models.User.email == email).first()
@@ -18,7 +23,8 @@ def get_user_by_email(db_session: Session, email: str):
 
 def get_users(
     db_session: Session,
-    name: str|None=None,
+    account_name: str|None=None,
+    user_name: str|None=None,
     email: str|None=None,
     access_token: str|None=None,
     role_id: int|None=None,
@@ -27,7 +33,8 @@ def get_users(
 ):
     '''查询用户'''
     return db_session.query(models.User).filter(
-        or_(models.User.name.like(f'%{name}%'), name is None),
+        or_(models.User.account_name.like(f'%{account_name}%'), account_name is None),
+        or_(models.User.user_name.like(f'%{user_name}%'), user_name is None),
         or_(models.User.email.like(f'%{email}%'), email is None),
         or_(models.User.access_token == access_token, access_token is None),
         or_(models.User.role_id == role_id, role_id is None),
@@ -42,7 +49,14 @@ def get_users(
 
 def create_user(db_session: Session, user: user_schemas.UserCreate):
     '''新增用户'''
-    db_user = models.User(name=user.name, email=user.email, password=str_to_sha256(user.password), role_id=user.role_id, status=user.status)
+    db_user = models.User(
+        account_name=user.account_name,
+        user_name=user.user_name,
+        email=user.email,
+        password=str_to_sha256(user.password),
+        role_id=user.role_id,
+        status=user.status
+    )
     db_session.add(db_user)
     db_session.commit()
     db_session.refresh(db_user)
@@ -52,13 +66,16 @@ def create_user(db_session: Session, user: user_schemas.UserCreate):
 def update_user(db_session: Session, user:user_schemas.UserUpdate, user_id):
     '''修改用户'''
     db_user = db_session.query(models.User).filter(models.User.id == user_id).first()
-    user_dict = user.dict()
-    db_user.name = user_dict['name']
-    db_user.email = user_dict['email']
-    if user_dict['password'] :
-        db_user.password = str_to_sha256(user_dict['password'])
-    db_user.role_id = user_dict['role_id']
-    db_user.status = user_dict['status']
+    # user_dict = user.dict()
+    # db_user.name = user_dict['name']
+    # db_user.email = user_dict['email']
+    db_user.account_name = user.account_name
+    db_user.user_name = user.user_name
+    db_user.email = user.email
+    if user.email :
+        db_user.password = str_to_sha256(user.password)
+    db_user.role_id = user.role_id
+    db_user.status = user.status
     db_session.commit()
     db_session.refresh(db_user)
     return db_user
@@ -71,8 +88,13 @@ def delete_user(db_session: Session, user_id):
 
 
 def update_token(db_session: Session, user_id: int|None=None, access_token: str|None=None):
-    '''更新token'''
-    # 传入user_id时，更新该用户的token
+    '''
+    更新token
+
+    传入user_id时，更新该用户的token，返回token值
+
+    没有传入user_id，且传入token时，删除该token值（此处暂未考虑token重复）
+    '''
     if user_id:
         db_user = db_session.query(models.User).filter(models.User.id == user_id).first()
         token = uuid.uuid4()
@@ -80,7 +102,6 @@ def update_token(db_session: Session, user_id: int|None=None, access_token: str|
         db_session.commit()
         db_session.refresh(db_user)
         return token
-    # 没有传入user_id，且传入token时，删除该token值（此处暂未考虑token重复）
     elif access_token:
         db_user = db_session.query(models.User).filter(models.User.access_token == access_token).first()
         if db_user:

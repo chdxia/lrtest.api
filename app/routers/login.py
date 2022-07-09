@@ -14,13 +14,20 @@ router = APIRouter(
 
 @router.post("/login", summary='登录')
 async def login(body: user_schemas.UserLogin, db_session: Session=Depends(get_mysql_db)):
-    db_user = user_crud.get_user_by_email(db_session, email=body.email)
-    if db_user is None:
-        raise ApiException(status_code=400, content={"code": 40000, "message": "email or password is incorrect"})
+    # 支持账号or邮箱登录
+    db_user = user_crud.get_user_by_account_name(db_session, account_name=body.account_name)
+    if db_user is None: # 账号登录失败，尝试使用邮箱登录
+        db_user_email = user_crud.get_user_by_email(db_session, email=body.account_name)
+        if db_user_email is None:
+            raise ApiException(status_code=400, content={"code": 40000, "message": "account or password is incorrect"})
+        elif db_user_email.password == str_to_selt_sha256(body.password, db_user_email.password.split('$')[2]):
+            return {"code": 20000, "message": "success", "data":{"token": user_crud.update_token(db_session, db_user_email.id)}}
+        else:
+            raise ApiException(status_code=400, content={"code": 40000, "message": "account or password is incorrect"})
     elif db_user.password == str_to_selt_sha256(body.password, db_user.password.split('$')[2]):
         return {"code": 20000, "message": "success", "data":{"token": user_crud.update_token(db_session, db_user.id)}}
     else:
-        raise ApiException(status_code=400, content={"code": 40000, "message": "email or password is incorrect"})
+        raise ApiException(status_code=400, content={"code": 40000, "message": "account or password is incorrect"})
 
 
 @router.delete("/logout", summary='退出登录', dependencies=[Depends(role_depends())])

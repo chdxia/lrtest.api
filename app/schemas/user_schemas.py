@@ -4,12 +4,13 @@ from pydantic import BaseModel
 
 class UserLogin(BaseModel):
     '''用户登录'''
-    email: str
+    account_name: str
     password: str
 
 class UserCreate(UserLogin):
     '''创建用户'''
-    name: str|None=None
+    user_name: str|None=None
+    email: str
     role_id: int
     status: bool
 
@@ -20,7 +21,8 @@ class UserUpdate(UserCreate):
 class User(BaseModel):
     '''用户信息'''
     id: int
-    name: str|None=None
+    account_name: str
+    user_name: str|None=None
     email: str
     role_id: int
     status: bool

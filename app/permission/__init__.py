@@ -5,7 +5,7 @@ role_depends = RoleDepends()
 '''
 *roles
 
-参数示例:admin,editor
+参数示例:admin,editor,visitor
 
 tips:
 

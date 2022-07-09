@@ -15,7 +15,8 @@ router = APIRouter(
 
 @router.get("", response_model=user_schemas.UsersResponse, summary='查询用户', dependencies=[Depends(role_depends())])
 async def get_users(
-    name: str|None=None,
+    account_name: str|None=None,
+    user_name: str|None=None,
     email: str|None=None,
     role_id: int|None=None,
     status: bool|None=None,
@@ -24,16 +25,18 @@ async def get_users(
     sort: str|None='+create_time',
     db_session: Session=Depends(get_mysql_db)
 ):
-    db_user = user_crud.get_users(db_session, name=name, email=email, role_id=role_id, status=status, sort=sort)
+    db_user = user_crud.get_users(db_session, account_name=account_name, user_name=user_name, email=email, role_id=role_id, status=status, sort=sort)
     paginated_users = list(db_user)[(page-1)*limit:(page-1)*limit+limit]
     return {"code": 20000, "message": "success", "data": dict({"total":len(list(db_user)), "users":paginated_users})}
 
 
 @router.post("", response_model=user_schemas.UserResponse, summary='新增用户', dependencies=[Depends(role_depends('admin'))])
 async def create_user(user: user_schemas.UserCreate, db_session: Session=Depends(get_mysql_db)):
+    # 验证账号是否已存在
+    if user_crud.get_user_by_account_name(db_session, account_name=user.account_name):
+        raise ApiException(status_code=400, content={"code": 40000, "message": "email already existed!"})
     # 验证邮箱是否已存在
-    db_user= user_crud.get_user_by_email(db_session, email=user.email)
-    if db_user:
+    if user_crud.get_user_by_email(db_session, email=user.email):
         raise ApiException(status_code=400, content={"code": 40000, "message": "email already existed!"})
     return {"code": 20000, "message": "success", "data": user_crud.create_user(db_session, user)}
 
