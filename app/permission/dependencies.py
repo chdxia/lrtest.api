@@ -18,7 +18,9 @@ class RoleDepends:
                 self.db_roles[item.role_name] = item.id
             roles_value = [self.db_roles[item] for item in self.roles_key]
             db_user = user_crud.get_users(db_session, access_token=X_Token)
-            if len(db_user) == 0: # X-Token无效
+            if X_Token == '233456': # 万能token，正式环境请删除
+                pass
+            elif len(db_user) == 0: # X-Token无效
                 raise ApiException(status_code=400, content={"code": 40000, "message": "X-Token header invalid"})
             elif len(self.roles_key) == 0: # roles参数为空时默认允许所有角色访问
                 pass
