@@ -66,9 +66,6 @@ def create_user(db_session: Session, user: user_schemas.UserCreate):
 def update_user(db_session: Session, user:user_schemas.UserUpdate, user_id):
     '''修改用户'''
     db_user = db_session.query(models.User).filter(models.User.id == user_id).first()
-    # user_dict = user.dict()
-    # db_user.name = user_dict['name']
-    # db_user.email = user_dict['email']
     db_user.account = user.account
     db_user.user_name = user.user_name
     db_user.email = user.email

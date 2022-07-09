@@ -33,17 +33,13 @@ async def get_users(
 
 @router.post("", response_model=user_schemas.UserResponse, summary='新增用户', dependencies=[Depends(role_depends('admin'))])
 async def create_user(user: user_schemas.UserCreate, db_session: Session=Depends(get_mysql_db)):
-    # 验证账号是否已存在
-    if user_crud.get_user_by_account(db_session, account=user.account):
+    if user_crud.get_user_by_account(db_session, account=user.account): # 验证账号是否已存在
         raise ApiException(status_code=400, content={"code": 40000, "message": "account already existed"})
-    # 验证邮箱是否已存在
-    if user_crud.get_user_by_email(db_session, email=user.email):
+    if user_crud.get_user_by_email(db_session, email=user.email): # 验证邮箱是否已存在
         raise ApiException(status_code=400, content={"code": 40000, "message": "email already existed"})
-    # 账号正则，不能使用邮箱
-    if re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.account):
+    if re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.account): # 账号正则，不能使用邮箱
         raise ApiException(status_code=400, content={"code": 40000, "message": "account is incorrect"})
-    # 邮箱正则
-    if not re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.email):
+    if not re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.email): # 邮箱正则
         raise ApiException(status_code=400, content={"code": 40000, "message": "email is incorrect"})
     return {"code": 20000, "message": "success", "data": user_crud.create_user(db_session, user)}
 
