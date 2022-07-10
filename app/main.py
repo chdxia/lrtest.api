@@ -25,7 +25,7 @@ app = FastAPI(
 
 @app.exception_handler(ApiException)
 async def api_exception_handler(request: Request, exc: ApiException):
-    '''自定义异常处理器'''
+    '''中间件，捕获异常'''
     return JSONResponse(status_code=exc.status_code, content=exc.content)
 
 

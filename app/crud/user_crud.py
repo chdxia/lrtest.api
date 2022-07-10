@@ -67,7 +67,7 @@ def update_user(db_session: Session, user:user_schemas.UserUpdate, user_id):
     '''修改用户'''
     db_user = db_session.query(models.User).filter(models.User.id == user_id).first()
     db_user.account = user.account
-    db_user.user_name = user.user_name
+    db_user.user_name = user.user_name  
     db_user.email = user.email
     if user.password:
         db_user.password = str_to_sha256(user.password)
