@@ -60,7 +60,7 @@ async def get_info():
 
 @router.get("/{user_id}", response_model=user_schemas.UserResponse, summary='根据id查询用户', dependencies=[Depends(role_depends())])
 async def read_user(user_id: int, db_session: Session=Depends(get_mysql_db)):
-    db_user= user_crud.get_user_by_id(db_session, user_id)
+    db_user = user_crud.get_user_by_id(db_session, user_id)
     if db_user is None:
         raise ApiException(status_code=200, content={"code": 40000, "message": "user not found"})
     return {"code": 20000, "message": "success", "data": db_user}

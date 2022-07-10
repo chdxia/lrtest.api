@@ -50,12 +50,12 @@ def get_users(
 def create_user(db_session: Session, user: user_schemas.UserCreate):
     '''新增用户'''
     db_user = models.User(
-        account=user.account,
-        user_name=user.user_name,
-        email=user.email,
-        password=str_to_sha256(user.password),
-        role_id=user.role_id,
-        status=user.status
+        account = user.account,
+        user_name = user.user_name,
+        email = user.email,
+        password = str_to_sha256(user.password),
+        role_id = user.role_id,
+        status = user.status
     )
     db_session.add(db_user)
     db_session.commit()
