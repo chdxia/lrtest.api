@@ -12,13 +12,18 @@ def get_user_by_id(db_session: Session, user_id: int):
 
 
 def get_user_by_account(db_session: Session, account: str):
-    '''根据账号查询用户（验证账号是否已存在）'''
+    '''根据账号查询用户'''
     return db_session.query(models.User).filter(models.User.account == account).first()
 
 
 def get_user_by_email(db_session: Session, email: str):
-    '''根据邮箱查询用户（验证邮箱是否已存在）'''
+    '''根据邮箱查询用户'''
     return db_session.query(models.User).filter(models.User.email == email).first()
+
+
+def get_user_by_token(db_session: Session, access_token: str):
+    '''根据token查询用户'''
+    return db_session.query(models.User).filter(models.User.access_token == access_token).first()
 
 
 def get_users(

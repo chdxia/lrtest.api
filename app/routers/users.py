@@ -1,5 +1,5 @@
 import re
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Header, Depends
 from sqlalchemy.orm import Session
 from ..exception.apiexception import ApiException
 from ..database.mysql import get_mysql_db
@@ -44,18 +44,12 @@ async def create_user(user: user_schemas.UserCreate, db_session: Session=Depends
     return {"code": 20000, "message": "success", "data": user_crud.create_user(db_session, user)}
 
 
-@router.get("/info", summary='查询当前用户信息', dependencies=[Depends(role_depends())])
-async def get_info():
-    return {
-        "code": 20000,
-        "message": "success",
-        "data":{
-            "roles":["admin"],
-            "introduction":"I am a super administrator",
-            "avatar":"http://qiniu.chdxia.com/FlVMejpFxswVqGscbaQwDRn2r1jr",
-            "name":"chdxia"
-        }
-    }
+@router.get("/info", response_model=user_schemas.UserResponse, summary='查询当前用户信息', dependencies=[Depends(role_depends())])
+async def get_info(X_Token: str = Header(...), db_session: Session=Depends(get_mysql_db)):
+    db_user = user_crud.get_user_by_token(db_session, access_token=X_Token)
+    if db_user is None:
+        raise ApiException(status_code=200, content={"code": 40000, "message": "user not found"})
+    return {"code": 20000, "message": "success", "data": db_user}
 
 
 @router.get("/{user_id}", response_model=user_schemas.UserResponse, summary='根据id查询用户', dependencies=[Depends(role_depends())])
