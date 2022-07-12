@@ -11,12 +11,20 @@ class UserCreate(UserLogin):
     '''创建用户'''
     user_name: str|None=None
     email: str
-    role_id: int
+    roles: list
     status: bool
 
 class UserUpdate(UserCreate):
     '''修改用户'''
     password: str|None=None
+
+class UserRole(BaseModel):
+    '''用户的角色'''
+    id: int
+    user_id: int
+    role_id: int
+    class Config:
+        orm_mode = True
 
 class User(BaseModel):
     '''用户信息'''
@@ -24,7 +32,7 @@ class User(BaseModel):
     account: str
     user_name: str|None=None
     email: str
-    role_id: int
+    roles: list[UserRole]
     status: bool
     create_time: datetime
     update_time: datetime

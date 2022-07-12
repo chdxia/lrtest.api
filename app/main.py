@@ -31,7 +31,7 @@ async def api_exception_handler(request: Request, exc: ApiException):
 
 @app.middleware('http')
 async def log_requests(request, call_next):
-    '''中间件，记录请求日志'''
+    '''中间件，记录日志'''
     start_time = time.time()
 
     response = await call_next(request)
