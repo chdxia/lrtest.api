@@ -1,104 +1,87 @@
-from sre_constants import SUCCESS
-from fastapi import APIRouter, Depends, HTTPException
+import re
+from fastapi import APIRouter, Header, Depends
 from sqlalchemy.orm import Session
-from ..db import crud, schemas
-from ..db.database import get_db
-from ..utils.log_settings import logger
-from ..utils.common import Common
+from ..exception.apiexception import ApiException
+from ..database.mysql import get_mysql_db
+from ..crud import user_crud
+from ..schemas import user_schemas
+from ..permission import role_depends
 
 
 router = APIRouter(
     prefix="/users",
-    tags=["users"],
-    responses={404: {"description": "Not found"}}
+    tags=["用户"]
 )
 
 
-# 查询用户
-@router.get("", response_model=schemas.responseUsers, summary='查询用户')
+@router.get("", response_model=user_schemas.UsersResponse, summary='查询用户', dependencies=[Depends(role_depends())])
 async def get_users(
-    name: str|None=None,
+    account: str|None=None,
+    user_name: str|None=None,
     email: str|None=None,
-    role: int|None=None,
+    role_id: int|None=None,
     status: bool|None=None,
     page: int=1,
     limit: int=10,
     sort: str|None='+create_time',
-    db: Session=Depends(get_db)
+    db_session: Session=Depends(get_mysql_db)
 ):
-    db_user = crud.get_users(db, name=name, email=email, role=role, status=status, sort=sort)
-    paginated_user = list(db_user)[(page-1)*limit:(page-1)*limit+limit]
-    logger.info("查询用户")
-    return {"code": 20000, "data": dict({"total":len(list(db_user)), "users":paginated_user})}
+    db_user = user_crud.get_users(db_session, account=account, user_name=user_name, email=email, role_id=role_id, status=status, sort=sort)
+    paginated_users = list(db_user)[(page-1)*limit:(page-1)*limit+limit]
+    return {"code": 20000, "message": "success", "data": dict({"total":len(list(db_user)), "users":paginated_users})}
 
 
-# 获取当前用户信息
-@router.get("/info")
-async def get_info():
-    return {
-        "code":20000,
-        "data":{
-            "roles":["admin"],
-            "introduction":"I am a super administrator",
-            "avatar":"https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
-            "name":"Super Admin"
-        }
-    }
+@router.post("", response_model=user_schemas.UserResponse, summary='新增用户', dependencies=[Depends(role_depends('admin'))])
+async def create_user(user: user_schemas.UserCreate, db_session: Session=Depends(get_mysql_db)):
+    if re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.account): # 账号正则，不能使用邮箱
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Account is incorrect"})
+    if not re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.email): # 邮箱正则
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Email is incorrect"})
+    if user_crud.get_user_by_account(db_session, account=user.account): # 验证账号是否已存在
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Account already existed"})
+    if user_crud.get_user_by_email(db_session, email=user.email): # 验证邮箱是否已存在
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Email already existed"})
+    return {"code": 20000, "message": "success", "data": user_crud.create_user(db_session, user)}
 
 
-# 根据id查询用户
-@router.get("/{user_id}", response_model=schemas.User)
-async def read_user(user_id: int, db: Session=Depends(get_db)):
-    db_user= crud.get_user_by_id(db, user_id=user_id)
+@router.get("/info", response_model=user_schemas.UserResponse, summary='查询当前用户信息', dependencies=[Depends(role_depends())])
+async def get_info(X_Token: str = Header(...), db_session: Session=Depends(get_mysql_db)):
+    db_user = user_crud.get_user_by_token(db_session, access_token=X_Token)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="user not found")
-    return db_user
+        raise ApiException(status_code=200, content={"code": 40000, "message": "User not found"})
+    return {"code": 20000, "message": "success", "data": db_user}
 
 
-# 根据用户id查询物品
-@router.get("/{user_id}/items", response_model=list[schemas.Item])
-async def get_items_by_userid(user_id: int, title: str|None=None, description: str|None=None, page: int=1, limit: int=10, db: Session=Depends(get_db)):
-    db_items= crud.get_items(db, user_id=user_id, title=title, description=description, skip=Common.page_to_skip(page, limit), limit=limit)
-    return db_items
-
-
-# 新增用户
-@router.post("", response_model=schemas.responseUser)
-async def create_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
-    # 验证邮箱是否已存在
-    db_user= crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="email already existed!")
-    return {"code": 20000, "data": crud.create_user(db=db, user=user)}
-
-
-# 修改用户
-@router.put('/{user_id}', response_model=schemas.responseUser)
-async def update_user(user_id: int, user: schemas.UserUpdate, db:Session=Depends(get_db)):
-    db_user= crud.get_user_by_id(db, user_id=user_id)
+@router.get("/{user_id}", response_model=user_schemas.UserResponse, summary='根据id查询用户', dependencies=[Depends(role_depends())])
+async def read_user(user_id: int, db_session: Session=Depends(get_mysql_db)):
+    db_user = user_crud.get_user_by_id(db_session, user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="user not found")
-    return {"code": 20000, "data": crud.update_user(db, user=user, user_id=user_id)}
+        raise ApiException(status_code=200, content={"code": 40000, "message": "User not found"})
+    return {"code": 20000, "message": "success", "data": db_user}
 
 
-# 删除用户
-@router.delete('/{user_id}', response_model=schemas.responseUser)
-async def delete_user(user_id: int, db:Session=Depends(get_db)):
-    db_user = crud.get_user_by_id(db, user_id=user_id)
+@router.put('/{user_id}', response_model=user_schemas.UserResponse, summary='修改用户', dependencies=[Depends(role_depends('admin'))])
+async def update_user(user_id: int, user: user_schemas.UserUpdate, db_session:Session=Depends(get_mysql_db)):
+    db_user = user_crud.get_user_by_id(db_session, user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail="user not found")
-    crud.delete_user(db, user_id=user_id)
-    return {"code": 20000, "data": db_user}
+        raise ApiException(status_code=200, content={"code": 40000, "message": "User not found"})
+    if re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.account):
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Account is incorrect"})
+    if not re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.email):
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Email is incorrect"})
+    db_user_account = user_crud.get_user_by_account(db_session, account=user.account)
+    if db_user_account and db_user_account != db_user:
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Account already existed"})
+    db_user_email = user_crud.get_user_by_email(db_session, email=user.email)
+    if db_user_email and db_user_email != db_user:
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Email already existed"})
+    return {"code": 20000, "message": "success", "data": user_crud.update_user(db_session, user, user_id)}
 
 
-# 新增物品
-@router.post("/{user_id}/items", response_model= schemas.Item)
-async def create_item_for_user(
-    user_id: int,
-    item: schemas.ItemCreate,
-    db: Session=Depends(get_db)
-):
-    db_user= crud.get_user_by_id(db, user_id=user_id)
+@router.delete('/{user_id}', response_model=user_schemas.UserResponse, summary='删除用户', dependencies=[Depends(role_depends('admin'))])
+async def delete_user(user_id: int, db_session:Session=Depends(get_mysql_db)):
+    db_user = user_crud.get_user_by_id(db_session, user_id)
     if db_user is None:
-        raise HTTPException(status_code=400, detail="user not found")
-    return crud.create_user_item(db=db, item=item, user_id=user_id)
+        raise ApiException(status_code=200, content={"code": 40000, "message": "User not found"})
+    user_crud.delete_user(db_session, user_id)
+    return {"code": 20000, "message": "success", "data": db_user}

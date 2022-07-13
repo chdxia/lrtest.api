@@ -1,0 +1,15 @@
+api_route_depends: '/api/v1'
+
+mysql:
+  host: "***.***.***.***"
+  port: 3306
+  user: "root"
+  password: "******"
+  database: "******"
+
+qiniu:
+  bucket: "******"
+  access_key: "******"
+  secret_key: "******"
+  callback_url: "https://lrtest.chdxia.com/api/v1/qiniu/callback"
+  external_link_base: "https://qiniu.chdxia.com"

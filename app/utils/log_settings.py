@@ -16,4 +16,5 @@ if not os.path.exists(log_path):
 log_path_all = os.path.join(log_path, f'{time.strftime("%Y-%m-%d")}_log.log')
 
 
+# rotation日志分割,retention保留时间,enqueue异步写入
 logger.add(log_path_all, rotation="00:00", retention="5 days", enqueue=True)
