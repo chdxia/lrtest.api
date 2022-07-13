@@ -29,7 +29,7 @@ async def delete_qiniu_files(body: list):
         if delete_files[0][0]['code'] == 200:
             return {"code": 20000, "message": "success"}
     else:
-        raise ApiException(status_code=200, content={"code": 40000, "message": "delete failed"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Delete failed"})
 
 
 @router.post("/callback", summary='七牛回调')

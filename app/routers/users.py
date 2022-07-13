@@ -34,13 +34,13 @@ async def get_users(
 @router.post("", response_model=user_schemas.UserResponse, summary='新增用户', dependencies=[Depends(role_depends('admin'))])
 async def create_user(user: user_schemas.UserCreate, db_session: Session=Depends(get_mysql_db)):
     if re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.account): # 账号正则，不能使用邮箱
-        raise ApiException(status_code=200, content={"code": 40000, "message": "account is incorrect"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Account is incorrect"})
     if not re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.email): # 邮箱正则
-        raise ApiException(status_code=200, content={"code": 40000, "message": "email is incorrect"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Email is incorrect"})
     if user_crud.get_user_by_account(db_session, account=user.account): # 验证账号是否已存在
-        raise ApiException(status_code=200, content={"code": 40000, "message": "account already existed"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Account already existed"})
     if user_crud.get_user_by_email(db_session, email=user.email): # 验证邮箱是否已存在
-        raise ApiException(status_code=200, content={"code": 40000, "message": "email already existed"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Email already existed"})
     return {"code": 20000, "message": "success", "data": user_crud.create_user(db_session, user)}
 
 
@@ -48,7 +48,7 @@ async def create_user(user: user_schemas.UserCreate, db_session: Session=Depends
 async def get_info(X_Token: str = Header(...), db_session: Session=Depends(get_mysql_db)):
     db_user = user_crud.get_user_by_token(db_session, access_token=X_Token)
     if db_user is None:
-        raise ApiException(status_code=200, content={"code": 40000, "message": "user not found"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "User not found"})
     return {"code": 20000, "message": "success", "data": db_user}
 
 
@@ -56,7 +56,7 @@ async def get_info(X_Token: str = Header(...), db_session: Session=Depends(get_m
 async def read_user(user_id: int, db_session: Session=Depends(get_mysql_db)):
     db_user = user_crud.get_user_by_id(db_session, user_id)
     if db_user is None:
-        raise ApiException(status_code=200, content={"code": 40000, "message": "user not found"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "User not found"})
     return {"code": 20000, "message": "success", "data": db_user}
 
 
@@ -64,17 +64,17 @@ async def read_user(user_id: int, db_session: Session=Depends(get_mysql_db)):
 async def update_user(user_id: int, user: user_schemas.UserUpdate, db_session:Session=Depends(get_mysql_db)):
     db_user = user_crud.get_user_by_id(db_session, user_id)
     if db_user is None:
-        raise ApiException(status_code=200, content={"code": 40000, "message": "user not found"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "User not found"})
     if re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.account):
-        raise ApiException(status_code=200, content={"code": 40000, "message": "account is incorrect"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Account is incorrect"})
     if not re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.email):
-        raise ApiException(status_code=200, content={"code": 40000, "message": "email is incorrect"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Email is incorrect"})
     db_user_account = user_crud.get_user_by_account(db_session, account=user.account)
     if db_user_account and db_user_account != db_user:
-        raise ApiException(status_code=200, content={"code": 40000, "message": "account already existed"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Account already existed"})
     db_user_email = user_crud.get_user_by_email(db_session, email=user.email)
     if db_user_email and db_user_email != db_user:
-        raise ApiException(status_code=200, content={"code": 40000, "message": "email already existed"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "Email already existed"})
     return {"code": 20000, "message": "success", "data": user_crud.update_user(db_session, user, user_id)}
 
 
@@ -82,6 +82,6 @@ async def update_user(user_id: int, user: user_schemas.UserUpdate, db_session:Se
 async def delete_user(user_id: int, db_session:Session=Depends(get_mysql_db)):
     db_user = user_crud.get_user_by_id(db_session, user_id)
     if db_user is None:
-        raise ApiException(status_code=200, content={"code": 40000, "message": "user not found"})
+        raise ApiException(status_code=200, content={"code": 40000, "message": "User not found"})
     user_crud.delete_user(db_session, user_id)
     return {"code": 20000, "message": "success", "data": db_user}
