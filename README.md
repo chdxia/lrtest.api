@@ -1,10 +1,10 @@
 # lrtest-api
 
-prod访问：http://lrtest.chdxia.com
+prod访问：https://lrtest.chdxia.com
 
-Jenkins地址：http://jenkins.chdxia.com
+Jenkins地址：https://jenkins.chdxia.com
 
-接口文档地址：http://lrtest.chdxia.com/api/v1/docs
+接口文档地址：https://lrtest.chdxia.com/api/v1/docs
 
 *提示：请修改./utils/config.py中的配置信息
 
