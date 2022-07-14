@@ -11,13 +11,6 @@ def get_user_by_id(db_session: Session, user_id: int):
     return db_session.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_role_by_id(db_session: Session, user_id: int):
-    '''根据id查询用户的角色'''
-    db_user_role = db_session.query(models.UserRole).filter(models.UserRole.user_id == user_id).all()
-    roles = list(map(lambda item: item.role_id, db_user_role))
-    return roles
-
-
 def get_user_by_account(db_session: Session, account: str):
     '''根据账号查询用户'''
     return db_session.query(models.User).filter(models.User.account == account).first()
@@ -79,7 +72,7 @@ def create_user(db_session: Session, user: user_schemas.UserCreate):
     return db_user
 
 
-def update_user(db_session: Session, user:user_schemas.UserUpdate, user_id):
+def update_user(db_session: Session, user:user_schemas.UserUpdate, user_id: int):
     '''修改用户'''
     db_session.query(models.UserRole).filter(models.UserRole.user_id == user_id).delete()
     db_user = db_session.query(models.User).filter(models.User.id == user_id).first()
@@ -98,7 +91,7 @@ def update_user(db_session: Session, user:user_schemas.UserUpdate, user_id):
     return db_user
 
 
-def delete_user(db_session: Session, user_id):
+def delete_user(db_session: Session, user_id: int):
     '''删除用户'''
     db_user_role = db_session.query(models.UserRole).filter(models.UserRole.user_id == user_id).all()
     db_user = db_session.query(models.User).filter(models.User.id == user_id).first()

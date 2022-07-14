@@ -8,7 +8,7 @@ class UserLogin(BaseModel):
     password: str
 
 class UserCreate(UserLogin):
-    '''创建用户'''
+    '''新增用户'''
     user_name: str|None=None
     email: str
     roles: list

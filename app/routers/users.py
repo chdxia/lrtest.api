@@ -9,12 +9,12 @@ from ..permission import role_depends
 
 
 router = APIRouter(
-    prefix="/users",
-    tags=["用户"]
+    prefix='/users',
+    tags=['用户']
 )
 
 
-@router.get("", response_model=user_schemas.UsersResponse, summary='查询用户', dependencies=[Depends(role_depends())])
+@router.get('', response_model=user_schemas.UsersResponse, summary='查询用户', dependencies=[Depends(role_depends())])
 async def get_users(
     account: str|None=None,
     user_name: str|None=None,
@@ -31,7 +31,7 @@ async def get_users(
     return {"code": 20000, "message": "success", "data": dict({"total":len(list(db_user)), "users":paginated_users})}
 
 
-@router.post("", response_model=user_schemas.UserResponse, summary='新增用户', dependencies=[Depends(role_depends('admin'))])
+@router.post('', response_model=user_schemas.UserResponse, summary='新增用户', dependencies=[Depends(role_depends('admin'))])
 async def create_user(user: user_schemas.UserCreate, db_session: Session=Depends(get_mysql_db)):
     if re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.account): # 账号正则，不能使用邮箱
         raise ApiException(status_code=200, content={"code": 40000, "message": "Account is incorrect"})
@@ -44,7 +44,7 @@ async def create_user(user: user_schemas.UserCreate, db_session: Session=Depends
     return {"code": 20000, "message": "success", "data": user_crud.create_user(db_session, user)}
 
 
-@router.get("/info", response_model=user_schemas.UserResponse, summary='查询当前用户信息', dependencies=[Depends(role_depends())])
+@router.get('/info', response_model=user_schemas.UserResponse, summary='查询当前用户信息', dependencies=[Depends(role_depends())])
 async def get_info(X_Token: str = Header(...), db_session: Session=Depends(get_mysql_db)):
     db_user = user_crud.get_user_by_token(db_session, access_token=X_Token)
     if db_user is None:
@@ -52,7 +52,7 @@ async def get_info(X_Token: str = Header(...), db_session: Session=Depends(get_m
     return {"code": 20000, "message": "success", "data": db_user}
 
 
-@router.get("/{user_id}", response_model=user_schemas.UserResponse, summary='根据id查询用户', dependencies=[Depends(role_depends())])
+@router.get('/{user_id}', response_model=user_schemas.UserResponse, summary='根据id查询用户', dependencies=[Depends(role_depends())])
 async def read_user(user_id: int, db_session: Session=Depends(get_mysql_db)):
     db_user = user_crud.get_user_by_id(db_session, user_id)
     if db_user is None:
@@ -80,8 +80,7 @@ async def update_user(user_id: int, user: user_schemas.UserUpdate, db_session:Se
 
 @router.delete('/{user_id}', response_model=user_schemas.UserResponse, summary='删除用户', dependencies=[Depends(role_depends('admin'))])
 async def delete_user(user_id: int, db_session:Session=Depends(get_mysql_db)):
-    db_user = user_crud.get_user_by_id(db_session, user_id)
-    if db_user is None:
+    if user_crud.get_user_by_id(db_session, user_id) is None:
         raise ApiException(status_code=200, content={"code": 40000, "message": "User not found"})
     user_crud.delete_user(db_session, user_id)
-    return {"code": 20000, "message": "success", "data": db_user}
+    return {"code": 20000, "message": "success"}

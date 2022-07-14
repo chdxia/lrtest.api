@@ -9,10 +9,10 @@ from ..utils import str_to_selt_sha256
 
 
 router = APIRouter(
-    tags=["登录"]
+    tags=['登录']
 )
 
-@router.post("/login", summary='登录')
+@router.post('/login', summary='登录')
 async def login(body: user_schemas.UserLogin, db_session: Session=Depends(get_mysql_db)): # 支持账号or邮箱登录
     db_user = user_crud.get_user_by_account(db_session, account=body.account)
     if db_user is None: # 账号登录失败，尝试使用邮箱登录
@@ -33,7 +33,7 @@ async def login(body: user_schemas.UserLogin, db_session: Session=Depends(get_my
         raise ApiException(status_code=200, content={"code": 40000, "message": "Account or password is incorrect"})
 
 
-@router.delete("/logout", summary='退出登录', dependencies=[Depends(role_depends())])
+@router.delete('/logout', summary='退出登录', dependencies=[Depends(role_depends())])
 async def logout(X_Token: str=Header(None) , db_session: Session=Depends(get_mysql_db)):
     if X_Token: # 清空token
         user_crud.update_token(db_session, access_token=X_Token)
