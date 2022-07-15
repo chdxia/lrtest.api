@@ -42,7 +42,7 @@ def getServer() {
 
     // 这里不展示明文密码，所以在jenkins凭据里提取
     withCredentials([usernamePassword(
-        credentialsId: "c4fdcaad-ba3e-4d3c-a5b5-2ce2dc804917",
+        credentialsId: "f76fdeee-5bbb-46c2-8d2c-2916f45576c9",
         usernameVariable: "username",
         passwordVariable: "password"
     )]) {
