@@ -1,9 +1,8 @@
 import re
-from fastapi import APIRouter, Depends
-from ..utils import get_qiniu_config
+from fastapi import APIRouter, HTTPException, Depends
 from ..crud import qiniu_crud
-from ..permission import role_depends
-from ..exception.apiexception import ApiException
+from ..dependencies import role_depends
+from ..lib import get_qiniu_config
 
 
 router = APIRouter(
@@ -29,7 +28,7 @@ async def delete_qiniu_files(body: list):
         if delete_files[0][0]['code'] == 200:
             return {"code": 20000, "message": "success"}
     else:
-        raise ApiException(status_code=200, content={"code": 40000, "message": "Delete failed"})
+        raise HTTPException(status_code=400, detail='Delete failed')
 
 
 @router.post('/callback', summary='七牛回调')

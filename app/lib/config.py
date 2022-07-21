@@ -27,8 +27,8 @@ def get_api_route_depends():
         logger.error('api_route_depends config error!!!')
 
 
-def get_database_url():
-    '''获取database_url'''
+def get_mysql_url():
+    '''获取mysql_database_url'''
     try:
         host = config_data["mysql"]["host"]
         port = config_data["mysql"]["port"]

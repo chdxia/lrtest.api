@@ -1,13 +1,9 @@
-import time
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from .routers import login, users, qiniu, roles
-from .models import models
-from .exception.apiexception import ApiException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from .database.mysql import engine
-from .utils import logger
-from .utils import get_api_route_depends
-from .utils import get_request_info
+from .models import models
+from .lib import Exception, Middleware, logger, get_api_route_depends, get_request_info
+from .api import login, users, qiniu, roles
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -23,25 +19,17 @@ app = FastAPI(
 )
 
 
-@app.exception_handler(ApiException)
-async def api_exception_handler(request: Request, exc: ApiException):
-    '''中间件，捕获异常'''
-    return JSONResponse(status_code=exc.status_code, content=exc.content)
+# 异常处理
+app.add_exception_handler(HTTPException, Exception.http_error_handler)
+app.add_exception_handler(RequestValidationError, Exception.http422_error_handler)
+app.add_exception_handler(Exception.UnicornException, Exception.unicorn_exception_handler)
 
 
-@app.middleware('http')
-async def log_requests(request, call_next):
-    '''中间件，记录日志'''
-    start_time = time.time()
-
-    response = await call_next(request)
-
-    process_time = (time.time() - start_time) * 1000
-    formatted_process_time = '{0:.2f}'.format(process_time)
-    logger.info(f'{request.method} {request.url} completed_in={formatted_process_time}ms status_code={response.status_code}')
-    return response
+# 注册中间件
+app.add_middleware(Middleware.LogerMiddleware)
 
 
+# hello_word
 @app.post(get_api_route_depends(), tags=["hello_word"], summary='返回请求信息')
 async def return_info(*, request: Request):
     req = get_request_info(request)
@@ -49,8 +37,8 @@ async def return_info(*, request: Request):
     logger.info(str(req))
     return req
 
-
+# 路由
 app.include_router(login.router, prefix=get_api_route_depends())
-app.include_router(roles.router, prefix=get_api_route_depends())
 app.include_router(users.router, prefix=get_api_route_depends())
+app.include_router(roles.router, prefix=get_api_route_depends())
 app.include_router(qiniu.router, prefix=get_api_route_depends())

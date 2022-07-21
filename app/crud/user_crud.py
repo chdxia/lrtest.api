@@ -3,7 +3,7 @@ from sqlalchemy import or_, and_
 from sqlalchemy.orm import Session
 from ..models import models
 from ..schemas import user_schemas
-from ..utils import str_to_sha256
+from ..lib import str_to_sha256
 
 
 def get_user_by_id(db_session: Session, user_id: int):

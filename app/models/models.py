@@ -17,6 +17,7 @@ class User(Base):
     create_time = Column(DateTime, default=datetime.now)
     update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     roles = relationship('UserRole', back_populates='users')
+    tasks = relationship('UserTask', back_populates='users')
 
 
 class Role(Base):
@@ -35,3 +36,28 @@ class UserRole(Base):
     role_id = Column(Integer, ForeignKey('roles.id'))
     users = relationship('User', back_populates='roles')
     roles = relationship('Role', back_populates='users')
+
+
+class Task(Base):
+    '''tasks表'''
+    __tablename__ = 'tasks'
+    id = Column(Integer, primary_key=True, index=True)
+    task_type = Column(Integer, nullable=False)
+    task_name = Column(String(64))
+    description = Column(String(128))
+    status = Column(Integer, nullable=False)
+    plan_end_time = Column(DateTime, nullable=False)
+    actual_end_time = Column(DateTime)
+    create_time = Column(DateTime, default=datetime.now)
+    update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    users = relationship('UserTask', back_populates='tasks')
+
+
+class UserTask(Base):
+    '''user_task表'''
+    __tablename__ = 'user_task'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    task_id = Column(Integer, ForeignKey('tasks.id'))
+    users = relationship('User', back_populates='tasks')
+    tasks = relationship('Task', back_populates='users')
