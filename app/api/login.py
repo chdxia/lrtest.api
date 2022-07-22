@@ -21,13 +21,13 @@ async def login(body: user_schemas.UserLogin, db_session: Session=Depends(get_my
         elif not db_user_email.status: # 账户已停用
             raise HTTPException(status_code=400, detail='Account is disabled')
         elif db_user_email.password == str_to_selt_sha256(body.password, db_user_email.password.split('$')[2]): # 密码正确，更新token
-            return {"code": 20000, "message": "success", "data":{"token": user_crud.update_token(db_session, db_user_email.id)}}
+            return {"code": 200, "message": "success", "data":{"token": user_crud.update_token(db_session, db_user_email.id)}}
         else:
             raise HTTPException(status_code=400, detail='Account or password is incorrect')
     elif not db_user.status: # 账户已停用
         raise HTTPException(status_code=400, detail='Account is disabled')
     elif db_user.password == str_to_selt_sha256(body.password, db_user.password.split('$')[2]): # 密码正确，更新token
-        return {"code": 20000, "message": "success", "data":{"token": user_crud.update_token(db_session, db_user.id)}}
+        return {"code": 200, "message": "success", "data":{"token": user_crud.update_token(db_session, db_user.id)}}
     else:
         raise HTTPException(status_code=400, detail='Account or password is incorrect')
 
@@ -36,4 +36,4 @@ async def login(body: user_schemas.UserLogin, db_session: Session=Depends(get_my
 async def logout(X_Token: str=Header(None) , db_session: Session=Depends(get_mysql_db)):
     if X_Token: # 清空token
         user_crud.update_token(db_session, access_token=X_Token)
-    return {"code": 20000, "message": "success"}
+    return {"code": 200, "message": "success"}

@@ -16,7 +16,7 @@ class UnicornException(Exception):
 async def unicorn_exception_handler(_: Request, exc: UnicornException):
     return JSONResponse(
         {
-            "code": exc.code * 100,
+            "code": exc.code,
             "message": exc.errmsg,
             "data": exc.data
         }
@@ -26,7 +26,7 @@ async def unicorn_exception_handler(_: Request, exc: UnicornException):
 async def http_error_handler(_: Request, exc: HTTPException):
     return JSONResponse(
         {
-            "code": exc.status_code * 100,
+            "code": exc.status_code,
             "message": exc.detail,
             "data": exc.detail
         },
@@ -38,7 +38,7 @@ async def http_error_handler(_: Request, exc: HTTPException):
 async def http422_error_handler(_: Request, exc: RequestValidationError | ValidationError):
     return JSONResponse(
         {
-            "code": status.HTTP_422_UNPROCESSABLE_ENTITY * 100,
+            "code": status.HTTP_422_UNPROCESSABLE_ENTITY,
             "message": "Value error",
             "data": exc.errors()
         },

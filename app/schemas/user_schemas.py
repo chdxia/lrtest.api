@@ -32,7 +32,7 @@ class User(BaseModel):
     account: str
     user_name: str|None=None
     email: str
-    roles: list[UserRole]
+    roles: list[UserRole]=[]
     status: bool
     create_time: datetime
     update_time: datetime
