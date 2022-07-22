@@ -13,7 +13,6 @@ pyyaml = "*"
 passlib = "*"
 gunicorn = "*"
 qiniu = "*"
-python-multipart = "*"
 [dev-packages]
 
 [requires]
