@@ -1,25 +1,24 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from ..lib import get_mysql_url
+from ..lib import get_mysql_credentials
+from fastapi import FastAPI
+from tortoise.contrib.fastapi import register_tortoise
 
 
-#  创建一个带连接池的引擎
-#  * db_server默认空闲8小时断开connection
-#  * pool_recycle=10800表示，connection空闲10800秒，自动重新获取
-#  * 如果使用poolclass=NullPool参数将禁用连接池，关闭会话后立即断开数据库连接！！！
-engine = create_engine(get_mysql_url(), pool_recycle=10800)
+DB_ORM_CONFIG = {
+    'connections': {
+        'base': {'engine': 'tortoise.backends.mysql', 'credentials': get_mysql_credentials()}
+    },
+    'apps': {
+        'base': {'models': ['models.base'], 'default_connection': 'base'}
+    },
+    'use_tz': False,
+    'timezone': 'Asia/Shanghai'
+}
 
 
-SessionLocal =  sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-def get_mysql_db():
-    db_session = SessionLocal()
-    try:
-        yield db_session
-    finally:
-        # 关闭会话
-        db_session.close()
-
-
-Base = declarative_base()
+async def register_mysql(app: FastAPI):
+    register_tortoise(
+        app,
+        config=DB_ORM_CONFIG,
+        generate_schemas=False,
+        add_exception_handlers=True,
+    )
