@@ -5,24 +5,19 @@ from ..schemas import user_schemas
 from ..lib import str_to_sha256
 
 
-# 根据id查询用户
-async def get_user_by_id(user_id: int):
-    return User.filter(id=user_id).first()
-
-
-# 根据账号查询用户
-async def get_user_by_account(account: str):
-    return User.filter(account=account).first()
-
-
-# 根据邮箱查询用户
-async def get_user_by_email(email: str):
-    return User.filter(email=email).first()
-
-
-# 根据token查询用户
-async def get_user_by_token(access_token: str):
-    return User.filter(access_token=access_token).first()
+# 查询用户
+async def get_user(
+    user_id: int|None=None,
+    account: str|None=None,
+    email: str|None=None,
+    access_token: str|None=None
+):
+    return User.filter(Q(
+        Q(id=user_id),
+        Q(account=account),
+        Q(email=email),
+        Q(access_token=access_token)
+    )).first()
 
 
 # 查询用户
