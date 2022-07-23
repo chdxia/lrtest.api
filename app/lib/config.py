@@ -1,7 +1,7 @@
 import os
 from urllib.parse import quote
 import yaml
-from .log_settings import logger
+from .logger import logger
 
 
 # 这样做是为了在public仓库隐藏自己的配置信息，如需使用，请修改为正确的配置文件路径
