@@ -1,5 +1,4 @@
 import os
-from urllib.parse import quote
 import yaml
 from .logger import logger
 
@@ -32,8 +31,8 @@ def get_mysql_credentials():
     try:
         host = config_data['mysql']['host']
         port = config_data['mysql']['port']
-        user = quote(config_data['mysql']['user'])
-        password = quote(config_data['mysql']['password'])
+        user = config_data['mysql']['user']
+        password = config_data['mysql']['password']
         database = config_data['mysql']['database']
         return {
             'host': host,
