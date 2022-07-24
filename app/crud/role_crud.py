@@ -1,4 +1,4 @@
-from tortoise.query_utils import Q
+from tortoise.query_utils import QueryModifier as Q
 from ..models.model import Role, UserRole
 
 

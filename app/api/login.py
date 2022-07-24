@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Header
-from tortoise.query_utils import Q
+from tortoise.query_utils import QueryModifier as Q
 from ..models.model import User
 from ..crud import user_crud
 from ..schemas import user_schemas

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "eaedea7651318c53a095e5ebd82ff8b6f78868e61a4be050b690a9b95ae4598d"
+            "sha256": "439860d0a77f17ccecbfabf04e331e2b4996248796540ea11da99ce07220bed0"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,14 @@
         ]
     },
     "default": {
+        "aiomysql": {
+            "hashes": [
+                "sha256:0d686c4fdae6b67d1825d8be60fa3b0e644fca2c84d3c936d850fc259c8e107e",
+                "sha256:b66fa1481ca71c5ee0d933ec3abf51f6136543a3710ba80b134eb33da7ed6f13"
+            ],
+            "index": "pypi",
+            "version": "==0.1.1"
+        },
         "aiosqlite": {
             "hashes": [
                 "sha256:6c49dc6d3405929b1d08eeccc72306d3677503cc5e5e43771efc1e00232e8231",
@@ -152,6 +160,14 @@
             ],
             "markers": "python_full_version >= '3.6.1'",
             "version": "==1.9.1"
+        },
+        "pymysql": {
+            "hashes": [
+                "sha256:41fc3a0c5013d5f039639442321185532e3e2c8924687abe6537de157d403641",
+                "sha256:816927a350f38d56072aeca5dfb10221fe1dc653745853d30a216637f5d7ad36"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==1.0.2"
         },
         "pypika-tortoise": {
             "hashes": [

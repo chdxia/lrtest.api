@@ -1,5 +1,5 @@
 import uuid
-from tortoise.query_utils import Q
+from tortoise.query_utils import QueryModifier as Q
 from ..models.model import User, UserRole
 from ..schemas import user_schemas
 from ..lib import str_to_sha256

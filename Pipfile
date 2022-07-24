@@ -6,12 +6,14 @@ name = "pypi"
 [packages]
 fastapi = "*"
 uvicorn = "*"
+gunicorn = "*"
 tortoise-orm = "*"
+aiomysql = "*"
 loguru = "*"
 pyyaml = "*"
 passlib = "*"
-gunicorn = "*"
 qiniu = "*"
+
 [dev-packages]
 
 [requires]

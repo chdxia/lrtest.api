@@ -1,14 +1,17 @@
-from ..lib import get_mysql_credentials
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
+from ..lib import get_mysql_credentials
+from ..models import model
 
 
 DB_ORM_CONFIG = {
     'connections': {
-        'base': {'engine': 'tortoise.backends.mysql', 'credentials': get_mysql_credentials()}
+        'default': {
+            'engine': 'tortoise.backends.mysql',
+            'credentials': get_mysql_credentials()}
     },
     'apps': {
-        'base': {'models': ['models.base'], 'default_connection': 'base'}
+        'models': {'models': [model], 'default_connection': 'default'}
     },
     'use_tz': False,
     'timezone': 'Asia/Shanghai'
@@ -19,6 +22,6 @@ async def register_mysql(app: FastAPI):
     register_tortoise(
         app,
         config=DB_ORM_CONFIG,
-        generate_schemas=False,
+        generate_schemas=True, #立即生成models对应的表，建议只在dev使用
         add_exception_handlers=True,
     )
