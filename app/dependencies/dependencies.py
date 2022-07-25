@@ -1,4 +1,5 @@
 from fastapi import HTTPException, Header
+from ..models.models import Role
 from ..crud import user_crud, role_crud
 
 
@@ -11,7 +12,7 @@ class RoleDepends:
     def __call__(self, *roles):
         async def get_token_header(X_Token: str = Header(...)):
             self.roles_key = roles
-            for item in await role_crud.get_roles():
+            for item in await Role.all().values():
                 self.db_roles[item['role_name']] = item['id']
             roles_value = [self.db_roles[item] for item in self.roles_key]
             db_user = await user_crud.get_user(access_token=X_Token)

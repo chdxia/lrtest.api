@@ -11,12 +11,9 @@ async def get_user(
     email: str|None=None,
     access_token: str|None=None
 ):
-    return await User.filter(
-        id=user_id,
-        account=account,
-        email=email,
-        access_token=access_token
-    ).first().values()
+    query = {'id':user_id, 'account':account, 'email':email, 'access_token':access_token}
+    query_ignore_none = {key: value for key, value in query.items() if value is not None}
+    return await User.filter(**query_ignore_none).first()
 
 
 # 查询用户
@@ -27,16 +24,27 @@ async def get_users(
     access_token: str|None=None,
     role_id: int|None=None,
     status: bool|None=None,
-    sort: str|None = 'create_time'
+    sort: str|None='create_time',
+    page: int|None=1,
+    limit: int|None=10
 ):
-    return await User.filter(
-        account__contains = account,
-        user_name__contains = user_name,
-        email__contains = email,
-        access_token = access_token,
-        id__in = list(map(lambda item: item.user_id, await UserRole.filter(id = role_id).values())),
-        status = status
-    ).order_by(sort).values()
+    query = {
+        'account__contains': account,
+        'user_name__contains': user_name,
+        'email__contains': email,
+        'access_token': access_token,
+        'status': status
+    }
+    # 忽略查询参数中的None值
+    query_ignore_none = {key: value for key, value in query.items() if value is not None}
+    filters = User.filter(**query_ignore_none).filter(
+        id__in = list(map(lambda item: item['user_id'], await UserRole.filter(role_id = role_id).values()))
+    ).order_by(sort)
+    # 用户列表页面中的total字段
+    total = await filters.count()
+    # 对查询结果进行分页
+    filters_page_limit = await filters.offset((page-1)*limit).limit(limit)
+    return {'total':total, 'users':filters_page_limit}
 
 
 # 新增用户
@@ -50,7 +58,7 @@ async def create_user(user: user_schemas.UserCreate):
     )
     if user.roles:
         for item in user.roles:
-            await UserRole.create(user_id='1', role_id='1')
+            await UserRole.create(user_id=db_user.id, role_id=item)
     return db_user
 
 
@@ -73,8 +81,7 @@ async def update_user(user:user_schemas.UserUpdate, user_id: int):
 
 # 删除用户
 async def delete_user(user_id: int):
-    await UserRole.filter(user_id=user_id).delete()
-    await User.filter(id=user_id).delete()
+    return await User.filter(id=user_id).delete()
 
 
 # 更新token
@@ -88,7 +95,6 @@ async def update_token(user_id: int|None=None, access_token: str|None=None):
     '''
     if user_id:
         token = uuid.uuid4()
-        await User.filter(id=user_id).update(access_token=token)
-        return token
+        return await User.filter(id=user_id).update(access_token=token)
     elif access_token:
-        await User.filter(access_token=access_token).update(access_token = None)
+        return await User.filter(access_token=access_token).update(access_token = None)

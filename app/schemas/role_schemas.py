@@ -1,6 +1,14 @@
 from pydantic import BaseModel
 
 
+# 用户的角色
+class UserRole(BaseModel):
+    id: int
+    user_id: int
+    role_id: int
+    class Config:
+        orm_mode = True
+
 # 新增角色
 class RoleCreate(BaseModel):
     role_name: str
