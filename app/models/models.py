@@ -30,8 +30,8 @@ class Role(Model):
 
 class UserRole(Model):
     id = fields.IntField(pk=True, description='id')
-    user_id = fields.ForeignKeyField(model_name='models.User', related_name='user_role', on_delete=fields.CASCADE, to_field='id')
-    role_id = fields.ForeignKeyField(model_name='models.Role', related_name='user_role', on_delete=fields.RESTRICT, to_field='id')
+    user = fields.ForeignKeyField(model_name='models.User', related_name='user_role', on_delete=fields.CASCADE, to_field='id')
+    role = fields.ForeignKeyField(model_name='models.Role', related_name='user_role', on_delete=fields.RESTRICT, to_field='id')
     class Meta:
         table = 'user_role'
         table_description = '用户角色关系表'
@@ -55,8 +55,8 @@ class Task(Model):
 
 class UserTask(Model):
     id = fields.IntField(pk=True, description='id')
-    user_id = fields.ForeignKeyField(model_name='models.User', related_name='user_task', on_delete=fields.CASCADE, to_field='id')
-    task_id = fields.ForeignKeyField(model_name='models.Task', related_name='user_task', on_delete=fields.RESTRICT, to_field='id')
+    user = fields.ForeignKeyField(model_name='models.User', related_name='user_task', on_delete=fields.CASCADE, to_field='id')
+    task = fields.ForeignKeyField(model_name='models.Task', related_name='user_task', on_delete=fields.CASCADE, to_field='id')
     class Meta:
         table = 'user_task'
         table_description = '用户任务关系表'
