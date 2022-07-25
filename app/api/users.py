@@ -20,11 +20,11 @@ async def get_users(
     status: bool|None=None,
     page: int=1,
     limit: int=10,
-    sort: str|None='+create_time'
+    sort: str|None='create_time'
 ):
-    db_user = user_crud.get_users(account=account, user_name=user_name, email=email, role_id=role_id, status=status, sort=sort)
-    paginated_users = list(db_user)[(page-1)*limit:(page-1)*limit+limit]
-    return {"code": 200, "message": "success", "data": dict({"total":len(list(db_user)), "users":paginated_users})}
+    db_user = await user_crud.get_users(account=account, user_name=user_name, email=email, role_id=role_id, status=status, sort=sort)
+    paginated_users = db_user[(page-1)*limit:(page-1)*limit+limit]
+    return {"code": 200, "message": "success", "data": dict({"total":len(db_user), "users":paginated_users})}
 
 
 @router.post('', response_model=user_schemas.UserResponse, summary='新增用户', dependencies=[Depends(role_depends('admin'))])
@@ -33,11 +33,11 @@ async def create_user(user: user_schemas.UserCreate):
         raise HTTPException(status_code=400, detail='Account is incorrect')
     if not re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.email): # 邮箱正则
         raise HTTPException(status_code=400, detail='Email is incorrect')
-    if user_crud.get_user(account=user.account): # 验证账号是否已存在
-        raise HTTPException(status_code=400, detail=f'Account "{user.account}" already existed')
-    if user_crud.get_user(email=user.email): # 验证邮箱是否已存在
-        raise HTTPException(status_code=400, detail=f'Email "{user.email}" already existed')
-    return {"code": 201, "message": "success", "data": user_crud.create_user(user)}
+    if await user_crud.get_user(account=user.account): # 验证账号是否已存在
+        raise HTTPException(status_code=400, detail=f'Account {user.account} already existed')
+    if await user_crud.get_user(email=user.email): # 验证邮箱是否已存在
+        raise HTTPException(status_code=400, detail=f'Email {user.email} already existed')
+    return {"code": 201, "message": "success", "data": await user_crud.create_user(user)}
 
 
 @router.get('/info', response_model=user_schemas.UserResponse, summary='查询当前用户信息', dependencies=[Depends(role_depends())])
@@ -60,17 +60,17 @@ async def read_user(user_id: int):
 async def update_user(user_id: int, user: user_schemas.UserUpdate):
     db_user = user_crud.get_user(user_id=user_id)
     if db_user is None:
-        raise HTTPException(status_code=404, detail=f'User "{user.account}" not found')
+        raise HTTPException(status_code=404, detail=f'User {user.account} not found')
     if re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.account):
         raise HTTPException(status_code=400, detail='Account is incorrect')
     if not re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.email):
         raise HTTPException(status_code=400, detail='Email is incorrect')
     db_user_account = user_crud.get_user(account=user.account)
     if db_user_account and db_user_account != db_user:
-        raise HTTPException(status_code=400, detail=f'Account "{user.account}" already existed')
+        raise HTTPException(status_code=400, detail=f'Account {user.account} already existed')
     db_user_email = user_crud.get_user(email=user.email)
     if db_user_email and db_user_email != db_user:
-        raise HTTPException(status_code=400, detail=f'Email "{user.email}" already existed')
+        raise HTTPException(status_code=400, detail=f'Email {user.email} already existed')
     return {"code": 200, "message": "success", "data": user_crud.update_user(user, user_id)}
 
 

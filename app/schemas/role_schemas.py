@@ -1,30 +1,30 @@
 from pydantic import BaseModel
 
 
+# 新增角色
 class RoleCreate(BaseModel):
-    '''新增角色'''
     role_name: str
 
+# 角色
 class Role(BaseModel):
-    '''角色'''
     id: int
     role_name: str
     class Config:
         orm_mode = True
 
+# 返回角色信息
 class RoleResponse(BaseModel):
-    '''返回角色信息'''
     code: int
     message: str
     data: Role
 
+# 角色数量
 class RoleTotal(BaseModel):
-    '''角色数量'''
     total: int
     roles: list[Role]
 
+# 返回角色信息
 class RolesResponse(BaseModel):
-    '''返回角色信息'''
     code: int
     message: str
     data: RoleTotal

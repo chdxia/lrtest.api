@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Header
-from tortoise.query_utils import QueryModifier as Q
-from ..models.model import User
+from ..models.models import User
 from ..crud import user_crud
 from ..schemas import user_schemas
 from ..dependencies import role_depends
@@ -15,7 +14,7 @@ router = APIRouter(
 @router.post('/login', summary='登录')
 async def login(body: user_schemas.UserLogin):
     # 支持账号/邮箱登录
-    db_user = User.filter(Q(Q(account=body.account), Q(email=body.account), join_type="OR")).first()
+    db_user = await User.filter(account=body.account, email=body.account).first().values()
     if db_user is None: # 账号/邮箱登录失败
         raise HTTPException(status_code=400, detail='Account or password is incorrect')
     elif not db_user.status: # 账户已停用
@@ -29,5 +28,5 @@ async def login(body: user_schemas.UserLogin):
 @router.delete('/logout', summary='退出登录', dependencies=[Depends(role_depends())])
 async def logout(X_Token: str=Header(None)):
     if X_Token: # 清空token
-        user_crud.update_token(access_token=X_Token)
+        await user_crud.update_token(access_token=X_Token)
     return {"code": 200, "message": "success"}

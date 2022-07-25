@@ -1,6 +1,5 @@
 import uuid
-from tortoise.query_utils import QueryModifier as Q
-from ..models.model import User, UserRole
+from ..models.models import User, UserRole
 from ..schemas import user_schemas
 from ..lib import str_to_sha256
 
@@ -12,12 +11,12 @@ async def get_user(
     email: str|None=None,
     access_token: str|None=None
 ):
-    return User.filter(Q(
-        Q(id=user_id),
-        Q(account=account),
-        Q(email=email),
-        Q(access_token=access_token)
-    )).first()
+    return await User.filter(
+        id=user_id,
+        account=account,
+        email=email,
+        access_token=access_token
+    ).first().values()
 
 
 # 查询用户
@@ -28,21 +27,21 @@ async def get_users(
     access_token: str|None=None,
     role_id: int|None=None,
     status: bool|None=None,
-    sort: str|None = '+create_time'
+    sort: str|None = 'create_time'
 ):
-    return User.filter(Q(
-        Q(account__contains = account),
-        Q(user_name__contains = user_name),
-        Q(email__contains = email),
-        Q(access_token = access_token),
-        Q(id__in = list(map(lambda item: item.user_id, UserRole.filter(id = role_id).all()))),
-        Q(status = status)
-    )).order_by(sort).all()
+    return await User.filter(
+        account__contains = account,
+        user_name__contains = user_name,
+        email__contains = email,
+        access_token = access_token,
+        id__in = list(map(lambda item: item.user_id, await UserRole.filter(id = role_id).values())),
+        status = status
+    ).order_by(sort).values()
 
 
 # 新增用户
 async def create_user(user: user_schemas.UserCreate):
-    db_user = User.create(
+    db_user = await User.create(
         account = user.account,
         user_name = user.user_name,
         email = user.email,
@@ -51,31 +50,31 @@ async def create_user(user: user_schemas.UserCreate):
     )
     if user.roles:
         for item in user.roles:
-            UserRole.create(user_id=db_user.id, role_id=item)
+            await UserRole.create(user_id='1', role_id='1')
     return db_user
 
 
 # 修改用户
 async def update_user(user:user_schemas.UserUpdate, user_id: int):
-    UserRole.filter(user_id=user_id).delete()
-    db_user = User.filter(id=user_id).update(
+    await UserRole.filter(user_id=user_id).delete()
+    db_user = await User.filter(id=user_id).update(
         account = user.account,
         user_name = user.user_name,
         email = user.email,
         status = user.status
     )
     if user.password:
-        db_user = User.filter(id=user_id).update(password = str_to_sha256(user.password))
+        db_user = await User.filter(id=user_id).update(password = str_to_sha256(user.password))
     if user.roles:
         for item in user.roles:
-            UserRole.create(user_id=user_id, role_id=item)
+            await UserRole.create(user_id=user_id, role_id=item)
     return db_user
 
 
 # 删除用户
 async def delete_user(user_id: int):
-    UserRole.filter(user_id=user_id).delete()
-    User.filter(id=user_id).delete()
+    await UserRole.filter(user_id=user_id).delete()
+    await User.filter(id=user_id).delete()
 
 
 # 更新token
@@ -89,7 +88,7 @@ async def update_token(user_id: int|None=None, access_token: str|None=None):
     '''
     if user_id:
         token = uuid.uuid4()
-        User.filter(id=user_id).update(access_token=token)
+        await User.filter(id=user_id).update(access_token=token)
         return token
     elif access_token:
-        User.filter(access_token=access_token).update(access_token = None)
+        await User.filter(access_token=access_token).update(access_token = None)
