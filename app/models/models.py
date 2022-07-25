@@ -20,7 +20,7 @@ class User(Model):
         
 
 class Role(Model):
-    id = fields.IntField(pk=True, description='角色id')
+    id = fields.IntField(pk=True, index=True, description='角色id')
     role_name = fields.CharField(64, unique=True, description='角色名')
     user_role: fields.ReverseRelation['UserRole']
     class Meta:
@@ -29,7 +29,7 @@ class Role(Model):
 
 
 class UserRole(Model):
-    id = fields.IntField(pk=True, description='id')
+    id = fields.IntField(pk=True, index=True, description='id')
     user = fields.ForeignKeyField(model_name='models.User', related_name='user_role', on_delete=fields.CASCADE, to_field='id')
     role = fields.ForeignKeyField(model_name='models.Role', related_name='user_role', on_delete=fields.RESTRICT, to_field='id')
     class Meta:
@@ -54,7 +54,7 @@ class Task(Model):
 
 
 class UserTask(Model):
-    id = fields.IntField(pk=True, description='id')
+    id = fields.IntField(pk=True, index=True, description='id')
     user = fields.ForeignKeyField(model_name='models.User', related_name='user_task', on_delete=fields.CASCADE, to_field='id')
     task = fields.ForeignKeyField(model_name='models.Task', related_name='user_task', on_delete=fields.CASCADE, to_field='id')
     class Meta:

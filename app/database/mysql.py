@@ -22,6 +22,6 @@ async def register_mysql(app: FastAPI):
     register_tortoise(
         app,
         config=DB_ORM_CONFIG,
-        generate_schemas=True, #立即生成models对应的表，建议只在dev设置为True
+        generate_schemas=False, #立即生成models对应的表，建议只在dev设置为True
         add_exception_handlers=True,
     )
