@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Header
+from tortoise.expressions import Q
 from ..models.models import User
 from ..crud import user_crud
 from ..schemas import user_schemas
@@ -14,13 +15,14 @@ router = APIRouter(
 @router.post('/login', summary='登录')
 async def login(body: user_schemas.UserLogin):
     # 支持账号/邮箱登录
-    db_user = await User.filter(account=body.account, email=body.account).first().values()
+    db_user = await User.filter(Q(account=body.account) | Q(email=body.account)).first()
     if db_user is None: # 账号/邮箱登录失败
         raise HTTPException(status_code=400, detail='Account or password is incorrect')
     elif not db_user.status: # 账户已停用
         raise HTTPException(status_code=400, detail='Account is disabled')
     elif db_user.password == str_to_selt_sha256(body.password, db_user.password.split('$')[2]): # 密码正确，更新token
-        return {"code": 200, "message": "success", "data":{"token": user_crud.update_token(user_id=db_user.id)}}
+        print (await user_crud.update_token(user_id=db_user.id))
+        return {"code": 200, "message": "success", "data": 123}
     else:
         raise HTTPException(status_code=400, detail='Account or password is incorrect')
 
