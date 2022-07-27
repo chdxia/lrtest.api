@@ -8,7 +8,7 @@ class User(Model):
     user_name = fields.CharField(64, null=True, description='用户名')
     email = fields.CharField(64, unique=True, description='用户邮箱')
     password = fields.CharField(64, null=True, description='用户密码')
-    access_token = fields.CharField(64, null=True, default=None, description='账号token')
+    access_token = fields.CharField(64, null=True, description='账号token')
     status = fields.BooleanField(default=True, description='账号状态 True:启用 False:停用')
     create_time = fields.DatetimeField(auto_now_add=True, description='创建时间')
     update_time = fields.DatetimeField(auto_now=True, description='更新时间')
@@ -44,7 +44,7 @@ class Task(Model):
     description = fields.CharField(128, null=True, description='任务描述')
     status = fields.IntField(description='任务状态')
     plan_end_time = fields.DateField(description='预计结束时间')
-    actual_end_time = fields.DatetimeField(null=True, default=None, description='实际结束时间')
+    actual_end_time = fields.DatetimeField(null=True, description='实际结束时间')
     create_time = fields.DatetimeField(auto_now_add=True, description='创建时间')
     update_time = fields.DatetimeField(auto_now=True, description='更新时间')
     user_task: fields.ReverseRelation['UserTask']
