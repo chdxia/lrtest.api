@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from .middleware import Events, Exception, Middleware
-from .lib import get_api_route_depends
+from .utils import get_api_route_depends
 from .api import login, users, qiniu, roles
 
 

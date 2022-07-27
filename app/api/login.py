@@ -4,7 +4,7 @@ from tortoise.expressions import Q
 from ..models.models import User
 from ..schemas import user_schemas
 from ..dependencies import role_depends
-from ..lib import str_to_selt_sha256
+from ..utils import str_to_selt_sha256
 
 
 router = APIRouter(tags=['登录'])

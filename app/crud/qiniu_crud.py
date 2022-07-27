@@ -1,6 +1,6 @@
 import json
 import qiniu
-from ..lib import get_qiniu_config
+from ..utils import get_qiniu_config
 
 
 bucket = get_qiniu_config()['bucket']

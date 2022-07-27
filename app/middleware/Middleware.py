@@ -1,6 +1,6 @@
 import time
 from starlette.middleware.base import BaseHTTPMiddleware
-from ..lib import logger
+from ..utils import logger
 
 
 class LogerMiddleware(BaseHTTPMiddleware):

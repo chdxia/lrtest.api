@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from ..crud import qiniu_crud
 from ..dependencies import role_depends
-from ..lib import get_qiniu_config
+from ..utils import get_qiniu_config
 
 
 router = APIRouter(prefix='/qiniu', tags=['七牛云存储'])

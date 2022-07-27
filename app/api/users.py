@@ -4,7 +4,7 @@ from tortoise.expressions import Q
 from ..models.models import User, UserRole
 from ..schemas import user_schemas
 from ..dependencies import role_depends
-from ..lib import ignore_none, str_to_sha256
+from ..utils import ignore_none, str_to_sha256
 
 
 router = APIRouter(prefix='/users', tags=['用户'])
