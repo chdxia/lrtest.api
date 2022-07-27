@@ -12,7 +12,7 @@ class UserLogin(BaseModel):
 class UserCreate(UserLogin):
     user_name: str|None=None
     email: str
-    roles: list=[]
+    roles: list
     status: bool
 
 # 修改用户

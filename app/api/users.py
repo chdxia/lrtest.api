@@ -1,14 +1,13 @@
 import re
 from fastapi import APIRouter, HTTPException, Header, Depends
-from ..crud import user_crud
+from tortoise.expressions import Q
+from ..models.models import User, UserRole
 from ..schemas import user_schemas
 from ..dependencies import role_depends
+from ..lib import ignore_none, str_to_sha256
 
 
-router = APIRouter(
-    prefix='/users',
-    tags=['用户']
-)
+router = APIRouter(prefix='/users', tags=['用户'])
 
 
 @router.get('', response_model=user_schemas.UsersResponse, summary='查询用户', dependencies=[Depends(role_depends())])
@@ -18,21 +17,18 @@ async def get_users(
     email: str|None=None,
     role_id: int|None=None,
     status: bool|None=None,
-    page: int|None=None,
-    limit: int|None=None,
-    sort: str|None='create_time'
+    sort: str|None='create_time',
+    page: int|None=1,
+    limit: int|None=10
 ):
-    db_user = await user_crud.get_users(
-        account=account,
-        user_name=user_name,
-        email=email,
-        role_id=role_id,
-        status=status,
-        sort=sort,
-        page=page,
-        limit=limit
-    )
-    return {"code": 200, "message": "success", "data": db_user}
+    db_user = User.filter(**ignore_none(
+        account__contains = account,
+        user_name__contains = user_name,
+        email__contains = email,
+        id__in = list(map(lambda item: item['user_id'], await UserRole.filter(role_id = role_id).values())) if role_id else None,
+        status = status
+    )).order_by(sort)
+    return {"code": 200, "message": "success", "data": {"total": await db_user.count(), "users": await db_user.offset((page-1)*limit).limit(limit)}}
 
 
 @router.post('', response_model=user_schemas.UserResponse, summary='新增用户', dependencies=[Depends(role_depends('admin'))])
@@ -41,53 +37,67 @@ async def create_user(user: user_schemas.UserCreate):
         raise HTTPException(status_code=400, detail='Account is incorrect')
     if not re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.email): # 邮箱正则
         raise HTTPException(status_code=400, detail='Email is incorrect')
-    if await user_crud.get_user(account=user.account): # 验证账号是否已存在
+    if await User.filter(account=user.account).first(): # 验证账号是否已存在
         raise HTTPException(status_code=400, detail=f'Account {user.account} already existed')
-    if await user_crud.get_user(email=user.email): # 验证邮箱是否已存在
+    if await User.filter(email=user.email).first(): # 验证邮箱是否已存在
         raise HTTPException(status_code=400, detail=f'Email {user.email} already existed')
-    return {"code": 201, "message": "success", "data": await user_crud.create_user(user)}
+    # 创建用户
+    db_user = await User.create(
+        account = user.account,
+        user_name = user.user_name,
+        email = user.email,
+        password = str_to_sha256(user.password),
+        status = user.status
+    )
+    # 绑定用户的角色
+    [await UserRole.create(user_id=db_user.id, role_id=item) for item in user.roles if user.roles]
+    return {"code": 200, "message": "success", "data": db_user}
 
 
 @router.get('/info', response_model=user_schemas.UserResponse, summary='查询当前用户信息', dependencies=[Depends(role_depends())])
 async def get_info(X_Token: str = Header(...)):
-    db_user = await user_crud.get_user(access_token=X_Token)
-    if db_user is None:
+    db_user = await User.filter(access_token=X_Token).first()
+    if not db_user:
         raise HTTPException(status_code=400, detail='X-Token header invalid')
     return {"code": 200, "message": "success", "data": db_user}
 
 
 @router.get('/{user_id}', response_model=user_schemas.UserResponse, summary='根据id查询用户', dependencies=[Depends(role_depends())])
 async def read_user(user_id: int):
-    db_user = await user_crud.get_user(user_id=user_id)
-    if db_user is None:
+    db_user = await User.filter(id=user_id).first()
+    if not db_user:
         raise HTTPException(status_code=404, detail='User not found')
     return {"code": 200, "message": "success", "data": db_user}
 
 
 @router.put('/{user_id}', response_model=user_schemas.UserResponse, summary='修改用户', dependencies=[Depends(role_depends('admin'))])
 async def update_user(user_id: int, user: user_schemas.UserUpdate):
-    db_user = await user_crud.get_user(user_id=user_id)
+    db_user = await User.filter(id=user_id).first()
     if db_user is None:
         raise HTTPException(status_code=404, detail=f'User {user.account} not found')
     if re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.account):
         raise HTTPException(status_code=400, detail='Account is incorrect')
     if not re.fullmatch(r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$', user.email):
         raise HTTPException(status_code=400, detail='Email is incorrect')
-    db_user_account = user_crud.get_user(account=user.account)
-    if db_user_account and db_user_account != db_user:
-        raise HTTPException(status_code=400, detail=f'Account {user.account} already existed')
-    db_user_email = user_crud.get_user(email=user.email)
-    if db_user_email and db_user_email != db_user:
-        raise HTTPException(status_code=400, detail=f'Email {user.email} already existed')
-    if await user_crud.update_user(user, user_id):
-        return {"code": 201, "message": "success", "data": db_user}
-    else:
-        raise HTTPException(status_code=500, detail='Failed to modify user')
+    db_user_account_email = await User.filter(Q(account=user.account) | Q(email=user.email)).first()
+    if db_user_account_email and db_user_account_email != db_user:
+        raise HTTPException(status_code=400, detail=f'Account or email already existed')
+    await UserRole.filter(user_id=user_id).delete()
+    await User.filter(id=user_id).update(
+        account = user.account,
+        user_name = user.user_name,
+        email = user.email,
+        status = user.status
+    )
+    if user.password:
+        User.filter(id=user_id).update(password = str_to_sha256(user.password))
+    [await UserRole.create(user_id=user_id, role_id=item) for item in user.roles if user.roles]
+    return {"code": 200, "message": "success", "data": await User.filter(id=user_id).first()}
 
 
 @router.delete('/{user_id}', summary='删除用户', dependencies=[Depends(role_depends('admin'))])
 async def delete_user(user_id: int):
-    if user_crud.get_user(user_id=user_id) is None:
+    if not await User.filter(id=user_id).first():
         raise HTTPException(status_code=404, detail='User not found')
-    user_crud.delete_user(user_id)
-    return {"code": 201, "message": "success"}
+    if await User.filter(id=user_id).delete():
+        return {"code": 200, "message": "success"}

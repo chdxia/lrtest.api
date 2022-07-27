@@ -1,14 +1,10 @@
-import re
 from fastapi import APIRouter, HTTPException, Depends
 from ..crud import qiniu_crud
 from ..dependencies import role_depends
 from ..lib import get_qiniu_config
 
 
-router = APIRouter(
-    prefix='/qiniu',
-    tags=['七牛云存储']
-)
+router = APIRouter(prefix='/qiniu', tags=['七牛云存储'])
 
 
 @router.get('/files', summary='获取七牛文件列表', dependencies=[Depends(role_depends())])
