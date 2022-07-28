@@ -25,6 +25,14 @@ async def login(body: user_schemas.UserLogin):
         raise HTTPException(status_code=400, detail='Account or password is incorrect')
 
 
+@router.get('/info', response_model=user_schemas.UserResponse, summary='查询当前用户信息', dependencies=[Depends(role_depends())])
+async def get_info(X_Token: str = Header(...)):
+    db_user = await User.filter(access_token=X_Token).first()
+    if not db_user:
+        raise HTTPException(status_code=400, detail='X-Token header invalid')
+    return {"code": 200, "message": "success", "data": db_user}
+
+
 @router.delete('/logout', summary='退出登录', dependencies=[Depends(role_depends())])
 async def logout(X_Token: str=Header(None)):
     if X_Token: # 清空token

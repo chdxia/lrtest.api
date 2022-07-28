@@ -54,14 +54,6 @@ async def create_user(user: user_schemas.UserCreate):
     return {"code": 200, "message": "success", "data": db_user}
 
 
-@router.get('/info', response_model=user_schemas.UserResponse, summary='查询当前用户信息', dependencies=[Depends(role_depends())])
-async def get_info(X_Token: str = Header(...)):
-    db_user = await User.filter(access_token=X_Token).first()
-    if not db_user:
-        raise HTTPException(status_code=400, detail='X-Token header invalid')
-    return {"code": 200, "message": "success", "data": db_user}
-
-
 @router.get('/{user_id}', response_model=user_schemas.UserResponse, summary='根据id查询用户', dependencies=[Depends(role_depends())])
 async def read_user(user_id: int):
     db_user = await User.filter(id=user_id).first()
