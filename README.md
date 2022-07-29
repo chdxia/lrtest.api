@@ -9,7 +9,7 @@
   </a>
 </p>
 
-基于FastAPI开发的一个工具平台（后端）
+基于FastAPI开发的一个测试工具（后端）
 
 API文档传送门：https://lrtest.chdxia.com/api/v1/docs
 
@@ -35,7 +35,7 @@ Jenkins传送门：https://jenkins.chdxia.com
 
 [pyyaml](https://pyyaml.org/)：与yaml文件的交互
 
-[passlib](https://passlib.readthedocs.io/en/stable/)：加密用户密码
+[passlib](https://passlib.readthedocs.io/en/stable/)：用户密码加密
 
 [qiniu](https://developer.qiniu.com/kodo/1242/python)：七牛SDK，用于图片资源存储
 
