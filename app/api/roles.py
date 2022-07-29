@@ -16,7 +16,7 @@ async def get_roles(page: int|None=1, limit: int|None=10):
 @router.post('', response_model=role_schemas.RoleResponse, summary='新增角色', dependencies=[Depends(role_depends('admin'))])
 async def create_role(role: role_schemas.RoleCreate):
     if role.role_name in list(map(lambda item: item['role_name'], await Role.all().values())):
-        raise  HTTPException(status_code=400, detail=f'Role {role.role_name} already existed')
+        raise  HTTPException(status_code=400, detail=f'角色({role.role_name})已存在')
     return {"code": 200, "message": "success", "data": await Role.create(role_name=role.role_name)}
 
 
@@ -24,9 +24,9 @@ async def create_role(role: role_schemas.RoleCreate):
 async def delete_role(role_id: int):
     db_role = await Role.filter(id=role_id).first()
     if db_role is None:
-        raise  HTTPException(status_code=404, detail='Role not found')
+        raise  HTTPException(status_code=404, detail='role not found')
     elif db_role.role_name == 'admin':
-        raise  HTTPException(status_code=401, detail='Not allowed to delete admin')
+        raise  HTTPException(status_code=401, detail='not allowed to delete admin')
     elif await UserRole.filter(role_id=role_id): # role_id参数可以为None，所以这里不能将role_id=role_id省略成role_id
         raise  HTTPException(status_code=400, detail='该角色已被用户绑定，请先解绑')
     if await Role.filter(id=role_id).delete():

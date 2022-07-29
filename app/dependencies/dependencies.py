@@ -20,7 +20,7 @@ class RoleDepends:
             elif not db_user: # X-Token无效
                 raise HTTPException(status_code=400, detail='X-Token header invalid')
             elif not db_user.status: # 账号已停用
-                raise HTTPException(status_code=400, detail='Account is disabled')
+                raise HTTPException(status_code=400, detail='账号已被禁用')
             elif len(self.roles_key) == 0: # roles参数为空时默认允许所有角色访问
                 pass
             elif [item for item in list(map(lambda item: item['role_id'], await UserRole.filter(user_id=db_user.id).values())) if item in roles_value]: # 允许roles参数中的角色访问（当前用户的角色与roles存在交集，则可以访问）
@@ -28,5 +28,5 @@ class RoleDepends:
             elif self.db_roles['admin'] in list(map(lambda item: item['role_id'], await UserRole.filter(user_id=db_user.id).values())): # 默认允许admin访问（roles参数中可以省略admin）
                 pass
             else:
-                raise HTTPException(status_code=401, detail='Permission denied')
+                raise HTTPException(status_code=401, detail='抱歉，权限不足')
         return get_token_header

@@ -39,7 +39,7 @@ async def http422_error_handler(_: Request, exc: RequestValidationError | Valida
     return JSONResponse(
         {
             "code": status.HTTP_422_UNPROCESSABLE_ENTITY,
-            "message": "Value error",
+            "message": "value error",
             "data": exc.errors()
         },
         status_code = 422

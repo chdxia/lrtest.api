@@ -17,6 +17,11 @@ async def read_qiniu_files():
     return {"code": 200, "message": "success", "data": url_list}
 
 
+@router.post('/callback', summary='七牛上传回调')
+async def qiniu_callback(body: dict):
+    return {"code": 200, "message": "success", "data": dict({"key": body['key']})}
+
+
 @router.delete('/files', summary='批量删除文件', dependencies=[Depends(role_depends('admin'))])
 async def delete_qiniu_files(body: list):
     delete_files = qiniu_crud.delete_qiniu_files(keys=list(map(lambda item: item[len(get_qiniu_config()['external_link_base']) + 1:], body)))
@@ -27,11 +32,6 @@ async def delete_qiniu_files(body: list):
         raise HTTPException(status_code=400, detail='Delete failed')
 
 
-@router.post('/callback', summary='七牛回调')
-async def qiniu_callback(body: dict):
-    return {"code": 200, "message": "success", "data": dict({"key": body['key']})}
-
-
-@router.get('/upload/token', summary='获取七牛token', dependencies=[Depends(role_depends())])
+@router.get('/upload/token', summary='获取上传token', dependencies=[Depends(role_depends())])
 async def get_qiniu_upload_token():
     return {"code": 200, "message": "success", "data": dict({"token": qiniu_crud.get_qiniu_upload_token()})}
