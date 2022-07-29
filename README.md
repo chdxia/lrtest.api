@@ -1,6 +1,15 @@
 # lrtest-api
 
-基于FastAPI开发的一个测试工具平台（后端）
+<p>
+  <a href="https://github.com/tiangolo/fastapi">
+    <img src="https://img.shields.io/badge/fastapi-0.79.0-brightgreen.svg" alt="fastapi">
+  </a>
+  <a href="https://github.com/tortoise/tortoise-orm">
+    <img src="https://img.shields.io/badge/tortoise--orm-0.19.2-brightgreen.svg" alt="tortoise-orm">
+  </a>
+</p>
+
+基于FastAPI开发的一个工具平台（后端）
 
 API文档传送门：https://lrtest.chdxia.com/api/v1/docs
 
