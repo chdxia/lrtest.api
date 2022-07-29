@@ -4,7 +4,7 @@ from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
 
 
-class UnicornException(Exception):
+class UvicornException(Exception):
     def __init__(self, code, errmeg, data=None):
         if data is None:
             data = {}
@@ -13,7 +13,8 @@ class UnicornException(Exception):
         self.data = data
 
 
-async def unicorn_exception_handler(_: Request, exc: UnicornException):
+# 重写uvicorn异常
+async def uvicorn_exception_handler(_: Request, exc: UvicornException):
     return JSONResponse(
         {
             "code": exc.code,
@@ -23,6 +24,7 @@ async def unicorn_exception_handler(_: Request, exc: UnicornException):
     )
 
 
+# 重写HTTPException
 async def http_error_handler(_: Request, exc: HTTPException):
     return JSONResponse(
         {
@@ -35,6 +37,7 @@ async def http_error_handler(_: Request, exc: HTTPException):
     )
 
 
+# 重写422异常
 async def http422_error_handler(_: Request, exc: RequestValidationError | ValidationError):
     return JSONResponse(
         {

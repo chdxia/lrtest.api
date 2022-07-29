@@ -3,9 +3,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from ..utils import logger
 
 
+# 记录请求日志
 class LogerMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
-        '''中间件，记录请求日志'''
         start_time = time.time()
 
         response = await call_next(request)

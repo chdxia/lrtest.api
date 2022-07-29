@@ -23,7 +23,7 @@ app.add_event_handler("shutdown", Events.shutdown(app))
 # 异常处理
 app.add_exception_handler(HTTPException, Exception.http_error_handler)
 app.add_exception_handler(RequestValidationError, Exception.http422_error_handler)
-app.add_exception_handler(Exception.UnicornException, Exception.unicorn_exception_handler)
+app.add_exception_handler(Exception.UvicornException, Exception.uvicorn_exception_handler)
 
 
 # 注册中间件
