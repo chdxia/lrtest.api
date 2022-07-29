@@ -1,4 +1,4 @@
 #!/bin/bash
 pkill gunicorn
 pipenv install
-&& pipenv run gunicorn app.main:app
+pipenv run gunicorn app.main:app
