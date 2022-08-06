@@ -20,14 +20,14 @@ async def login(body: user_schemas.UserLogin):
         raise HTTPException(status_code=400, detail='账号已被禁用')
     elif db_user.password == str_to_selt_sha256(body.password, db_user.password.split('$')[2]): # 密码正确，更新token
         await User.filter(id=db_user.id).update(access_token=uuid.uuid4())
-        return {"code": 200, "message": "success", "data": await User.filter(id=db_user.id).first()}
+        return {"code": 200, "message": "success", "data": await User.filter(id=db_user.id).first().prefetch_related('_roles', '_tasks')}
     else:
         raise HTTPException(status_code=400, detail='账号或密码错误')
 
 
 @router.get('/info', response_model=user_schemas.UserResponse, summary='查询当前用户信息', dependencies=[Depends(role_depends())])
 async def get_info(X_Token: str = Header(...)):
-    db_user = await User.filter(access_token=X_Token).first()
+    db_user = await User.filter(access_token=X_Token).first().prefetch_related('_roles', '_tasks')
     if not db_user:
         raise HTTPException(status_code=400, detail='X-Token header invalid')
     return {"code": 200, "message": "success", "data": db_user}
