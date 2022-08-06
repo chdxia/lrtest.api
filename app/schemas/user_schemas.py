@@ -1,6 +1,5 @@
 from datetime import datetime
 from pydantic import BaseModel
-# from .role_schemas import UserRole
 
 
 # 用户登录
@@ -25,7 +24,8 @@ class User(BaseModel):
     account: str
     user_name: str|None=None
     email: str
-    # roles: list[UserRole]
+    roles: list
+    tasks: list
     status: bool
     create_time: datetime
     update_time: datetime
@@ -49,12 +49,12 @@ class UsersResponse(BaseModel):
     message: str
     data: TotalUser
 
-# 登录
-class Login(User):
+# 登录信息
+class LoginInfo(User):
     access_token: str
 
 # 返回登录信息
 class LoginResponse(BaseModel):
     code: int
     message: str
-    data: Login
+    data: LoginInfo

@@ -1,5 +1,5 @@
 import re
-from fastapi import APIRouter, HTTPException, Header, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from tortoise.expressions import Q
 from ..models.models import User, UserRole
 from ..schemas import user_schemas
@@ -28,7 +28,14 @@ async def get_users(
         id__in = list(map(lambda item: item['user_id'], await UserRole.filter(role_id = role_id).values())) if role_id else None,
         status = status
     )).order_by(sort)
-    return {"code": 200, "message": "success", "data": {"total": await db_user.count(), "users": await db_user.offset((page-1)*limit).limit(limit)}}
+    return {
+        "code": 200,
+        "message": "success",
+        "data": {
+            "total": await db_user.count(),
+            "users": await db_user.offset((page-1)*limit).limit(limit).prefetch_related('_roles', '_tasks')
+        }
+    }
 
 
 @router.post('', response_model=user_schemas.UserResponse, summary='新增用户', dependencies=[Depends(role_depends('admin'))])
