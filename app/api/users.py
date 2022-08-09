@@ -58,12 +58,12 @@ async def create_user(user: user_schemas.UserCreate):
     )
     # 绑定用户的角色
     [await UserRole.create(user_id=db_user.id, role_id=item) for item in user.roles if user.roles]
-    return {"code": 200, "message": "success", "data": db_user}
+    return {"code": 200, "message": "success", "data": await User.filter(id=db_user.id).first().prefetch_related('_roles', '_tasks')}
 
 
 @router.get('/{user_id}', response_model=user_schemas.UserResponse, summary='根据id查询用户', dependencies=[Depends(role_depends())])
 async def read_user(user_id: int):
-    db_user = await User.filter(id=user_id).first()
+    db_user = await User.filter(id=user_id).first().prefetch_related('_roles', '_tasks')
     if not db_user:
         raise HTTPException(status_code=404, detail='user not found')
     return {"code": 200, "message": "success", "data": db_user}
@@ -89,9 +89,9 @@ async def update_user(user_id: int, user: user_schemas.UserUpdate):
         status = user.status
     )
     if user.password:
-        User.filter(id=user_id).update(password = str_to_sha256(user.password))
+        await User.filter(id=user_id).update(password = str_to_sha256(user.password))
     [await UserRole.create(user_id=user_id, role_id=item) for item in user.roles if user.roles]
-    return {"code": 200, "message": "success", "data": await User.filter(id=user_id).first()}
+    return {"code": 200, "message": "success", "data": await User.filter(id=user_id).first().prefetch_related('_roles', '_tasks')}
 
 
 @router.delete('/{user_id}', summary='删除用户', dependencies=[Depends(role_depends('admin'))])
