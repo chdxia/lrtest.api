@@ -15,7 +15,7 @@ backlog = 2048
 
 # Worker processes
 # Server的工作进程数,正常范围:2-4 x $(NUM_CORES)
-workers = 2
+workers = 1
 # worker类
 worker_class = 'uvicorn.workers.UvicornH11Worker'
 # 限制单个进程同时处理的客户端最大数量,normal:1000
