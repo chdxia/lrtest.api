@@ -7,7 +7,7 @@ from apscheduler.executors.pool import ProcessPoolExecutor
 # 任务配置
 interval_task = {
     "jobstores": {
-        'default': MemoryJobStore
+        'default': MemoryJobStore()
     },
     "executors": {
         'default': ProcessPoolExecutor(10)

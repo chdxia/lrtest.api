@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from fastapi import APIRouter, HTTPException, Depends
 from tortoise.expressions import Q
 from ..models.models import User, UserRole
@@ -54,7 +55,8 @@ async def create_user(user: user_schemas.UserCreate):
         user_name = user.user_name,
         email = user.email,
         password = str_to_sha256(user.password),
-        status = user.status
+        status = user.status,
+        update_time = datetime.now()
     )
     # 绑定用户的角色
     [await UserRole.create(user_id=db_user.id, role_id=item) for item in user.roles if user.roles]
@@ -86,7 +88,8 @@ async def update_user(user_id: int, user: user_schemas.UserUpdate):
         account = user.account,
         user_name = user.user_name,
         email = user.email,
-        status = user.status
+        status = user.status,
+        update_time = datetime.now()
     )
     if user.password:
         await User.filter(id=user_id).update(password = str_to_sha256(user.password))
