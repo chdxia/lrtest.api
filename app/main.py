@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from .middleware import Events, Exception, Middleware
 from .utils import get_api_route_depends
-from .api import login, users, qiniu, roles
+from .api import login, users, tasks, qiniu, roles
 
 
 app = FastAPI(
@@ -33,5 +33,6 @@ app.add_middleware(Middleware.LogerMiddleware)
 # 路由
 app.include_router(login.router, prefix=get_api_route_depends())
 app.include_router(users.router, prefix=get_api_route_depends())
+app.include_router(tasks.router, prefix=get_api_route_depends())
 app.include_router(roles.router, prefix=get_api_route_depends())
 app.include_router(qiniu.router, prefix=get_api_route_depends())

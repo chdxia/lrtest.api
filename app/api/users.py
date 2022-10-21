@@ -56,9 +56,10 @@ async def create_user(user: user_schemas.UserCreate):
         email = user.email,
         password = str_to_sha256(user.password),
         status = user.status,
+        create_time = datetime.now(),
         update_time = datetime.now()
     )
-    # 绑定用户的角色
+    # 用户、角色之间的绑定
     [await UserRole.create(user_id=db_user.id, role_id=item) for item in user.roles if user.roles]
     return {"code": 200, "message": "success", "data": await User.filter(id=db_user.id).first().prefetch_related('_roles', '_tasks')}
 
